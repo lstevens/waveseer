@@ -1,0 +1,18 @@
+symbols: [BTCUSDT]
+timeframes:
+  - tf: 1m
+    windows: [30, 60, 120, 240]
+  - tf: 1h
+    windows: [12, 24, 72]
+dist_threshold_multiplier: 1.2
+cluster:
+  method: agglomerative
+  linkage: ward
+  max_dtw: 0.15
+ui:
+  dash_host: 127.0.0.1
+  dash_port: 8050
+pattern_api:
+  host: 127.0.0.1
+  port: 9000
+  stream_url: http://127.0.0.1:9000

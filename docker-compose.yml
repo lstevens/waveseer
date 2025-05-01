@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  api:
+    build: .
+    command: ["uvicorn", "wave.api.app:app", "--host", "0.0.0.0", "--port", "9000"]
+    ports:
+      - "9000:9000"
+    volumes:
+      - .:/app
+  ui:
+    build: .
+    command: ["python", "-c", "from wave.ui.app import run; run()"]
+    ports:
+      - "8050:8050"
+    volumes:
+      - .:/app
+  seer:
+    build: .
+    command: ["wave", "seer", "--symbol", "BTCUSDT", "--tf", "1m"]
+    volumes:
+      - .:/app
+  ingest:
+    build: .
+    command: ["uvicorn", "wave.ingest:ws_app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app

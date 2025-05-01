@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WaveSeer Live Patterns</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+    tbody tr:nth-child(odd) { background: #fafafa; }
+    thead th { position: sticky; top: 0; z-index: 1; }
+  </style>
+</head>
+<body>
+  <h1>Real-Time Pattern Events</h1>
+  <div id='status' style='margin-bottom:10px;'>Connecting...</div>
+  <div id='error' style='color:red; display:none; margin-bottom:10px;'></div>
+  <table id="events">
+    <thead>
+      <tr><th>Timestamp</th><th>TF</th><th>Pattern ID</th><th>Score</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const wsUrl = 'ws://' + window.location.host + '/ws/ingest';
+    const MAX_ROWS = 100;
+    const tbody = document.querySelector('#events tbody');
+    const statusEl = document.getElementById('status');
+    const errorEl = document.getElementById('error');
+
+    function connect() {
+      statusEl.textContent = 'Connecting...';
+      const ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        console.log('WebSocket connected');
+        statusEl.textContent = 'Connected';
+        errorEl.style.display = 'none';
+      };
+
+      ws.onmessage = (evt) => {
+        try {
+          const ev = JSON.parse(evt.data);
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${ev.ts_start}</td>
+            <td>${ev.tf}</td>
+            <td>${ev.pattern_id}</td>
+            <td>${ev.score}</td>
+          `;
+          tbody.prepend(row);
+          if (tbody.children.length > MAX_ROWS) {
+            tbody.removeChild(tbody.lastChild);
+          }
+        } catch (e) {
+          console.error('Invalid message', evt.data);
+        }
+      };
+
+      ws.onclose = () => {
+        console.log('WebSocket closed');
+        statusEl.textContent = 'Disconnected. Reconnecting...';
+        setTimeout(connect, 1000);
+      };
+
+      ws.onerror = (err) => {
+        console.error('WebSocket error', err);
+        statusEl.textContent = 'Error. Retrying...';
+        errorEl.style.display = 'block';
+        errorEl.textContent = `WebSocket error: ${err.message}`;
+        ws.close();
+      };
+    }
+
+    connect();
+  </script>
+</body>
+</html>

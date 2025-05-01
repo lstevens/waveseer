@@ -1,0 +1,15 @@
+typer
+polars
+pandera
+stumpy
+duckdb
+pandas
+scikit-learn
+tslearn
+requests
+fastapi
+uvicorn[standard]
+dash
+schemathesis
+prometheus_client
+playwright

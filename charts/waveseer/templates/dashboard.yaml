@@ -1,0 +1,42 @@
+{{- if .Values.grafanaDashboard.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "waveseer.fullname" . }}-grafana-dashboard
+  labels:
+    grafana_dashboard: "1"
+data:
+  dashboard.json: |
+    {
+      "id": null,
+      "title": "WaveSeer Dashboard",
+      "panels": [
+        {
+          "type": "graph",
+          "title": "Service Uptime",
+          "targets": [
+            {
+              "expr": "up{job=~\"{{ .Release.Name }}-waveseer-.*\"}",
+              "legendFormat": "{{"{{"}}app.kubernetes.io/component{{"}}"}}"
+            }
+          ],
+          "datasource": null,
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 }
+        },
+        {
+          "type": "graph",
+          "title": "CPU Usage",
+          "targets": [
+            {
+              "expr": "sum by (pod) (rate(process_cpu_seconds_total{job=~\"{{ .Release.Name }}-waveseer-.*\"}[5m]))",
+              "legendFormat": "{{"{{"}}pod{{"}}"}}"
+            }
+          ],
+          "datasource": null,
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 }
+        }
+      ],
+      "schemaVersion": 27,
+      "version": 1
+    }
+{{- end }}

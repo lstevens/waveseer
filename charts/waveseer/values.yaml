@@ -1,0 +1,46 @@
+replicaCount: 1
+
+api:
+  image:
+    repository: waveseer
+    tag: local
+  command:
+    - "uvicorn"
+    - "wave.api.app:app"
+    - "--host"
+    - "0.0.0.0"
+    - "--port"
+    - "9000"
+  service:
+    port: 9000
+
+ingest:
+  image:
+    repository: waveseer
+    tag: local
+  command:
+    - "uvicorn"
+    - "wave.ingest:ws_app"
+    - "--host"
+    - "0.0.0.0"
+    - "--port"
+    - "8000"
+  service:
+    port: 8000
+
+ui:
+  image:
+    repository: waveseer
+    tag: local
+  command:
+    - "python"
+    - "-c"
+    - "from wave.ui.app import run; run()"
+  service:
+    port: 8050
+
+serviceMonitor:
+  enabled: true
+
+grafanaDashboard:
+  enabled: true

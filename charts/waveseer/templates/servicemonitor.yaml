@@ -1,0 +1,40 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "waveseer.fullname" . }}-servicemonitor
+  labels:
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values:
+          - waveseer
+  endpoints:
+    - port: http
+      interval: 15s
+  namespaceSelector:
+    any: true
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "waveseer.fullname" . }}-ingest-servicemonitor
+  labels:
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchExpressions:
+      - key: app.kubernetes.io/component
+        operator: In
+        values:
+          - ingest
+  endpoints:
+    - port: ws
+      interval: 15s
+  namespaceSelector:
+    any: true
+{{- end }}
