@@ -25,6 +25,11 @@ jobs:
       - name: Install Playwright browsers
         run: python -m playwright install chromium
 
+      - name: Run UI End-to-End tests
+        run: pytest wave/test_ui_e2e.py wave/test_ui_reconnect_e2e.py -q
+        env:
+          CI: true
+
       - name: Run tests
         run: pytest -q
         env:

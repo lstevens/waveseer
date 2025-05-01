@@ -26,6 +26,23 @@ pip install -r requirements.txt
 python -m playwright install chromium
 ```
 
+## Local Development
+
+```bash
+# Start ingest server (serves events UI on port 8000)
+uvicorn wave.ingest:ws_app --reload --host 127.0.0.1 --port 8000
+
+# Access Pattern Events UI at http://localhost:8000/
+
+# Start Dash management UI
+python3 - <<'EOF'
+from wave.ui.app import run
+run()
+EOF
+
+# Access Dash UI at http://localhost:8050/
+```
+
 ## Local Kubernetes Deployment
 
 ```bash
@@ -39,7 +56,6 @@ docker build -t waveseer:local .
 kind load docker-image waveseer:local
 
 # Deploy with Helm
-t:
 helm upgrade --install waveseer charts/waveseer \
   --namespace waveseer --create-namespace \
   --set image.tag=local
@@ -73,6 +89,7 @@ bash scripts/test-helm.sh
 
 ```bash
 pytest wave/test_ui_e2e.py -q
+pytest wave/test_ui_reconnect_e2e.py -q
 ```
 
 ## Continuous Integration

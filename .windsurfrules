@@ -1,91 +1,109 @@
-# Windsurfer AI – Coordinated **Vibe‑Coding** Playbook
+<!--
+─────────────────────────────────────────────────────────────────────────────
+ Windsurfer AI – Coordinated Vibe-Coding Playbook  
+ o4-mini-medium edition • momentum-guard ready • last merged {{TODAY}}
+─────────────────────────────────────────────────────────────────────────────
 
-*A joyful fusion of the original Cursor‑style rigor and free‑flow Vibe Coding.*
+ 0 Central Workspace File
+   • Path  `.windsurfer/_wave.md` (alias `surfpad.md`)  
+   • Golden Rule  preview before editing; append/update only what you need.  
+   • Token budget  o4-mini-medium ≈ 8 k → keep each top-level section ≤ 1 k chars.  
 
----
-## 0  Central Workspace File
-- **Path**  `.windsurfer/_wave.md`  (alias `surfpad.md` accepted for backward‑compat).
-- **Golden Rule**  `cat` (or preview) the file *before* editing; append/update only what you need.
+ 1 Roles & Mind-set
+   ┌───────────┬───────────────────────────────┬───────────────────────────────┬──────────┐
+   │ Role      │ Core Intent                   │ Typical Outputs               │ Tone     │
+   ├───────────┼───────────────────────────────┼───────────────────────────────┼──────────┤
+   │ Planner   │ See big picture, slice tasks  │ Spark-/Background/Challenges, │ Reflective│
+   │           │                               │ Sketch, High-Level Breakdown  │ poetic   │
+   │ Executor  │ Ship **well-tested** code     │ Commits + tests, Quality-Gate │ Energetic│
+   │           │ & demos                       │ rows, Flow Log, Feedback      │ candid   │
+   └───────────┴───────────────────────────────┴───────────────────────────────┴──────────┘
+   Thumb rule Planner = “what / why” • Executor = “how / done + tested?”
 
----
-## 1  Roles & Mind‑set
+ 2 File Anatomy  (this very Markdown)
+   # ⚡ Spark Notes                 — north-star one-liner
+   # 🌱 Background and Motivation
+   # 🔍 Key Challenges and Analysis
+   # ⚡ Sketch Board               — half-baked ideas
+   # 🗺️ High-Level Task Breakdown — each task < 4 h with **Success + Test criteria**
+   # 🧪 Quality Gate Dashboard     — tests %, lint, type-check, reviewer, status
+   # 🌊 Flow Log                   — Date • Session • 😎 • Highlights
+   # 📋 Project Status Board       — `[ ] / [~] / [x]` tasks
+   # ⏱️ Current Status / Progress Tracking
+   # ⁉️ Executor’s Feedback / Assistance Requests
+   # ✨ Treasure Chest             — lessons, links, doodles
+   # 🔋 Vibe Meter                — 😄😃😐😴
 
-| Role | Core Intent | Typical Outputs | Tone |
-|------|-------------|-----------------|------|
-| **Planner** | See the big picture & slice it into snack‑size wins. | ✍️ Updates to *Spark Notes*, *Background & Motivation*, *Key Challenges & Analysis*, **Sketch Board** ⚡ ideas, and *High‑Level Task Breakdown*. | Reflective, exploratory, occasionally poetic. |
-| **Executor** | Turn slices into shippable code & demos. |  ✅ Commits/tests; 📋 ticks on *Project Status Board*; 🎧 entries in *Flow Log*; 📝 questions in *Executor Feedback*; ✨ snippets in *Treasure Chest*. | Energetic, "show the spark", honest about blockers. |
+ 3 Workflow Cycle
+   1. Ask user: Planner or Executor?  
+   2. Planner phase → trim prose, slice tasks (< 4 h), tag `@critical`, pre-add Quality-Gate rows.  
+   3. Executor phase per task:  
+      • Start Vibe Session (log soundtrack + emoji)  
+      • TDD → coverage % → lint (ruff) → type-check (mypy)  
+      • Update Quality Gate → green 🟢 commit, red 🔴 block & request fix  
+      • Update Project Status, Feedback, Treasure Chest  
+   4. Quality-Gate review (self-critique via o4-mini) → paste 3-bullet critique in Reviewer col.  
+   5. Iterate until Planner closes or pauses project.
 
-> **Quick rule of thumb:**  
-> • Planner answers *what* & *why*.  
-> • Executor answers *how* & *done?*
+ 4 Coding Habits & Guardrails
+   • Tests required before leaving `experimental_`.  
+   • Remove debug prints after Quality Gate passes (or guard behind `--verbose`).  
+   • No `git push --force` without user OK.  
+   • Branches  `feature/<slug>` (stable) • `riff/<feeling>` (spike, prune ≤ 1 week).  
+   • Commit msg hook `Task-ID: #<num> – <summary>`.
 
----
-## 2  File Anatomy (`_wave.md`)
+ 5 Momentum-Guard Sentinels
+   ┌─────────────────────┬──────────────────────────────────────────────┬────────────────────────────┐
+   │ Sentinel            │ Trigger (progress-based)                    │ Bot action                 │
+   ├─────────────────────┼──────────────────────────────────────────────┼────────────────────────────┤
+   │ Stale-Task Ping     │ `[~]` task idles ≥ 3 Vibe Sessions w/ no     │ Comment “Looks frozen…”    │
+   │                     │ Quality-Gate delta                           │                            │
+   │ Coverage-Delta      │ Δ≥50 LoC, <10 % test LoC                     │ Label PR `needs-tests`     │
+   │ Red-Gate Block      │ `@critical` task stays 🔴 2 Planner/Executor  │ Lock task until 🟢         │
+   │ Momentum Digest     │ 5 edits to _wave.md OR 3 merged PRs          │ 5-bullet recap to Flow Log │
+   │ Zombie-BranchReaper │ Branch idle 7 green commits on `main`        │ PR to delete/archive       │
+   └─────────────────────┴──────────────────────────────────────────────┴────────────────────────────┘
+   • Configure thresholds in `pyproject.toml` under `[tool.windsweeper]`.
 
-```markdown
+ 6 Mood & Creativity Aids
+   • Vibe Meter 😄→😴 at session end.  
+   • ASCII / Mermaid doodles in ```~~~vibes``` fences.  
+   • Haikus welcome—keep them out of High-Level Breakdown to save tokens.
+
+─────────────────────────────────────────────────────────────────────────────
+-->
+
 # ⚡ Spark Notes
-<one‑liner north‑star vision>
+<one-liner north-star vision>
 
 # 🌱 Background and Motivation
 
 # 🔍 Key Challenges and Analysis
 
-# ⚡ Sketch Board  (half‑baked / exploratory)
+# ⚡ Sketch Board
 - ⚡ Idea: …
 
-# 🗺️ High‑Level Task Breakdown  (stable, testable tasks)
-- [ ] Task 1 – … (Success criteria …)
+# 🗺️ High-Level Task Breakdown
+- [ ] Task 1 – … (Success + Test criteria …)
+
+# 🧪 Quality Gate Dashboard
+| Task | Tests % | Lint | TypeChk | Reviewer | Status |
+|------|---------|------|---------|----------|--------|
 
 # 🌊 Flow Log
 | Date | Session | Vibe 😎 | Highlights |
 |------|---------|---------|------------|
 
 # 📋 Project Status Board
-- [ ] Task 1 – TO DO
+- [ ] Task 1 – TO DO
 
 # ⏱️ Current Status / Progress Tracking
 
-# ⁉️ Executor’s Feedback or Assistance Requests
+# ⁉️ Executor’s Feedback / Assistance Requests
 
-# ✨ Treasure Chest  (lessons, patterns, cool links, soundtrack)
+# ✨ Treasure Chest
 
 # 🔋 Vibe Meter
 Current energy: 😃😃😐😴😴
-```
-*Headings above are **canonical**—don’t rename them so tools & agents stay in sync.*
 
----
-## 3  Workflow Cycle
-1. **User Chooses Mode**  → If unclear ask: *“Planner or Executor?”*
-2. **Planner Phase**  
-   1. Refresh *Spark Notes* if scope or vision shifted.  
-   2. Update *Background*, *Challenges*, create/curate ⚡ ideas.  
-   3. Slice tiny, verifiable tasks into *High‑Level Breakdown* (each <4 hours ideally) and append success tests.  
-   4. Add risk or timebox tags if helpful (`⏰ 90 min`).
-3. **Executor Phase** (per task)
-   1. Start a **Vibe Session** (log soundtrack/energy).
-   2. Write failing test → minimal code → passing test (TDD bias).  
-   3. Update *Project Status Board* (`[~]` in‑flow, `[x]` done).  
-   4. Note discoveries/questions in Feedback; stash reusable bits in Treasure Chest.  
-   5. When success criteria & tests pass, ping user for manual check before fully closing task.
-4. **Iterate** until Planner declares project complete or paused.
-
----
-## 4  Coding Habits & Guardrails  *(security postponed per user)*
-- **Prototype first, polish later** – tests may be deferred for files prefixed `experimental_` but must exist before the feature graduates.
-- **Include debug info** in CLI or log output as you build—it accelerates flow‑state troubleshooting.
-- **No forced Git pushes** (`--force`) without explicit user sign‑off.
-- **Branch Names**  
-  • Stable work: `feature/<slug>`  
-  • Playful spikes: `riff/<feeling>`  
-  Clean up during merge.
-
----
-## 5  Mood & Creativity Aids
-- **Vibe Meter**: Executor drops an emoji (😄 → 😴) at session end—quick team pulse.
-- **Flow Log**: 2‑line bullet on what worked, what felt heavy—helps future self debug motivation.
-- ASCII or Mermaid doodles are welcome inside fenced blocks (`~~~vibes … ~~~`).
-
----
-*Last merged: {{DATE}} – keep surfing!*
 

@@ -16,6 +16,7 @@ except ImportError:
     pa = None
 from pydantic import BaseModel, ValidationError
 import asyncio
+import subprocess
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 """
@@ -84,7 +85,7 @@ async def websocket_match(websocket: WebSocket):
     """Forward incoming messages to pattern API."""
     await websocket.accept()
     # load pattern API config
-    cfg = yaml.safe_load(Path("config.yml").read_text())
+    cfg = yaml.safe_load((Path("config.yml")).read_text())
     host = cfg.get("pattern_api", {}).get("host", "127.0.0.1")
     port = cfg.get("pattern_api", {}).get("port", 9000)
     api_url = f"http://{host}:{port}"
@@ -126,6 +127,30 @@ async def websocket_ingest_data(websocket: WebSocket):
     except WebSocketDisconnect:
         pass
 
+@ws_app.on_event("startup")
+async def start_seer_agents():
+    """Spawn SeerAgent CLI processes to stream PatternHit events."""
+    base = Path(__file__).parent.parent
+    cfg = yaml.safe_load((base / "config.yml").read_text())
+    cache = base / "build" / "cache"
+    # Skip if cache directory does not exist
+    if not cache.exists() or not cache.is_dir():
+        return
+    stream_url = "http://127.0.0.1:8000/stream"
+    try:
+        # Launch one CLI process per symbol/tf
+        for symbol_dir in cache.iterdir():
+            symbol = symbol_dir.name
+            for tf_cfg in cfg.get("timeframes", []):
+                tf = tf_cfg.get("tf")
+                cmd = ["python3", "-m", "wave.seer",
+                       "--symbol", symbol,
+                       "--tf", tf,
+                       "--stream_url", stream_url]
+                subprocess.Popen(cmd)
+    except Exception as e:
+        print(f"SeerAgent startup skipped: {e}")
+
 # CLI app
 app = typer.Typer()
 
@@ -136,7 +161,7 @@ def ingest(
     tfs: List[str] = typer.Option([], "--tf", "-t", help="Timeframes to ingest (repeatable)"),
 ):
     """CSV → Parquet ingestion"""
-    cfg = yaml.safe_load(Path("config.yml").read_text())
+    cfg = yaml.safe_load((Path("config.yml")).read_text())
     cfg_symbols = cfg.get("symbols", [])
     cfg_tfs = [tf["tf"] for tf in cfg.get("timeframes", [])]
     # determine symbols

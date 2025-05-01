@@ -30,14 +30,21 @@
     const statusEl = document.getElementById('status');
     const errorEl = document.getElementById('error');
 
+    // Reconnect backoff
+    let reconnectDelay = 1000;
+    const maxReconnectDelay = 30000;
+
     function connect() {
       statusEl.textContent = 'Connecting...';
       const ws = new WebSocket(wsUrl);
+      // expose WebSocket for testing reconnect
+      window._ws = ws;
 
       ws.onopen = () => {
         console.log('WebSocket connected');
         statusEl.textContent = 'Connected';
         errorEl.style.display = 'none';
+        reconnectDelay = 1000;
       };
 
       ws.onmessage = (evt) => {
@@ -61,13 +68,16 @@
 
       ws.onclose = () => {
         console.log('WebSocket closed');
-        statusEl.textContent = 'Disconnected. Reconnecting...';
-        setTimeout(connect, 1000);
+        statusEl.textContent = `Disconnected. Reconnecting in ${reconnectDelay/1000}s...`;
+        setTimeout(() => {
+          connect();
+          reconnectDelay = Math.min(reconnectDelay * 2, maxReconnectDelay);
+        }, reconnectDelay);
       };
 
       ws.onerror = (err) => {
         console.error('WebSocket error', err);
-        statusEl.textContent = 'Error. Retrying...';
+        statusEl.textContent = `Error. Retrying in ${reconnectDelay/1000}s...`;
         errorEl.style.display = 'block';
         errorEl.textContent = `WebSocket error: ${err.message}`;
         ws.close();
