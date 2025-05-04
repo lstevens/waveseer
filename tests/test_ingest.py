@@ -39,10 +39,18 @@ def test_stream_broadcast(monkeypatch):
     client = TestClient(ws_app)
     event = {'x': 1}
     with client.websocket_connect('/ws/ingest') as ws1, client.websocket_connect('/ws/ingest') as ws2:
+        # First receive the connection established messages
+        conn1 = ws1.receive_json()
+        conn2 = ws2.receive_json()
+        assert conn1['type'] == 'connection_established'
+        assert conn2['type'] == 'connection_established'
+        
+        # Now post the event
         r = client.post('/stream', json=event)
         assert r.status_code == 200
         assert r.json() == {'status': 'ok'}
-        # both clients receive
+        
+        # Both clients should receive the event
         assert ws1.receive_json() == event
         assert ws2.receive_json() == event
 

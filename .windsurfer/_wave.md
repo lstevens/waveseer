@@ -58,6 +58,35 @@ WaveSeer uncovers recurrent price motifs in crypto time series. We need robust c
     - [x] Task 15.6.2 – Helm chart lint & template tests (Success: scripts/test-helm.sh passes) ⏰ 1 h
     - [x] Task 15.6.3 – UI E2E tests with Playwright (Success: test_ui_e2e.py passes) ⏰ 1.5 h
     - [x] Task 15.6.4 – CI pipeline via GitHub Actions (Success: CI workflow defined) ⏰ 1 h
+- [ ] Task 16 – Test & Lint Fixes
+  - [ ] Task 16.1 – Ingest API broadcast failures (tests/test_ingest.py) ⏰ 1 h
+    - Fix WebSocket connection confirmation events vs. expected raw events
+    - Update broadcast method to handle synchronous and asynchronous operation
+  - [ ] Task 16.2 – Pipeline invocation & broadcast (tests/test_ingest_pipeline.py) ⏰ 1 h
+    - Ensure pattern pipeline output matches expected test structure
+    - Fix data structure mismatches between test expectations and actual pipeline outputs
+  - [ ] Task 16.3 – Stream validation (tests/test_ingest_stream.py) ⏰ 1.5 h
+    - Add proper request validation with error responses (422 for schema violation)
+    - Implement consistent pattern validation logic
+  - [ ] Task 16.4 – Multi-symbol workflow (tests/test_multi_symbol_integration.py) ⏰ 2 h
+    - Implement missing multi-symbol broker logic
+    - Fix assertion comparisons between expected and actual result counts
+  - [ ] Task 16.5 – Scan parallel & CLI exit codes (tests/test_scan_parallel.py, tests/test_seer_cli.py) ⏰ 2 h
+    - Update scan_parallel implementation to return proper counts
+    - Fix CLI exit code handling in seer_cli
+  - [ ] Task 16.6 – WebSocket integration & endpoints (tests/test_ws_ingest_integration.py, wave/test_ws_echo.py, wave/test_ws_endpoints.py) ⏰ 2 h
+    - Fix WebSocket message format inconsistencies
+    - Ensure echo endpoint properly handles message types
+  - [ ] Task 16.7 – HTTP static & UI serve (tests/test_http_static.py, wave/ui/*) ⏰ 1.5 h
+    - Fix UI endpoint to properly serve static files
+    - Update UI E2E test to match actual response codes
+  - [ ] Task 16.8 – Model export signature & API (tests/test_model_export.py) ⏰ 2 h
+    - Update model constructor to match expected arguments
+    - Fix type errors in model initialization
+  - [ ] Task 16.9 – Lint fixes (examples/ and wave/ui/) ⏰ 1.5 h
+    - Fix E501 line length issues
+    - Fix E402 import ordering
+    - Fix W293 blank line whitespace
 
 # 🌊 Flow Log
 | Date       | Session | Vibe 😎 | Highlights                                            |
@@ -67,6 +96,10 @@ WaveSeer uncovers recurrent price motifs in crypto time series. We need robust c
 | 2025-04-30 | S3      | 😃😐   | Completed Task 15.1: added architecture sketches      |
 | 2025-04-30 | S4      | 😃😐   | Completed Task 15.4.3: static mount works             |
 | 2025-04-30 | S5      | 😃😐   | Completed Tasks 15.5.1–15.5.4: Docker/Compose, Helm chart, Metrics & Dashboard |
+| 2025-05-03 | S6      | 😃😎   | Completed Task 15.2.1: Robust WebSocket connection with state management |
+| 2025-05-04 | Planning | 🚧 | Scoped Test & Lint Fixes as Task 16 |
+| 2025-05-04 | S7      | 😃😎   | Task 16.1: Fixed test_stream_broadcast by handling connection message before event |
+| 2025-05-04 | S7      | 😃😎   | Task 16.3: Fixed stream validation to return 422 errors for invalid requests |
 
 # 📋 Project Status Board
 - [x] Task 10 – Done
@@ -92,12 +125,63 @@ WaveSeer uncovers recurrent price motifs in crypto time series. We need robust c
     - [x] Task 15.5.5 – Deploy to kind/minikube (Success: pods running) ⏰ 1 h
     - [x] Task 15.5.6 – End-to-end validation in k8s (Success: UI shows real data) ⏰ 1 h
   - [ ] Task 15.6 – Full Test Suite & CI (Success: all tests green) ⏰ 3 h
+- [ ] Task 16 – Test & Lint Fixes
+  - [x] Task 16.1 – Ingest API broadcast failures
+    - [x] Fix WebSocket connection confirmation events vs. expected raw events
+    - [x] Update test to handle connection message before event broadcast
+  - [ ] Task 16.2 – Pipeline invocation & broadcast
+    - Ensure pattern pipeline output matches expected test structure
+    - Fix data structure mismatches between test expectations and actual pipeline outputs
+  - [x] Task 16.3 – Stream validation
+    - [x] Add proper request validation with error responses (422 for schema violation)
+    - [x] Implement consistent pattern validation logic
+  - [ ] Task 16.4 – Multi-symbol workflow
+    - Implement missing multi-symbol broker logic
+    - Fix assertion comparisons between expected and actual result counts
+  - [ ] Task 16.5 – Scan parallel & CLI exit codes
+    - Update scan_parallel implementation to return proper counts
+    - Fix CLI exit code handling in seer_cli
+  - [ ] Task 16.6 – WebSocket integration & endpoints
+    - Fix WebSocket message format inconsistencies
+    - Ensure echo endpoint properly handles message types
+  - [ ] Task 16.7 – HTTP static & UI serve
+    - Fix UI endpoint to properly serve static files
+    - Update UI E2E test to match actual response codes
+  - [ ] Task 16.8 – Model export signature & API
+    - Update model constructor to match expected arguments
+    - Fix type errors in model initialization
+  - [ ] Task 16.9 – Lint fixes (examples/ and wave/ui/)
+    - Fix E501 line length issues
+    - Fix E402 import ordering
+    - Fix W293 blank line whitespace
 
 # ⏱️ Current Status / Progress Tracking
-Primed for deployment and live-data integration.
+Implemented robust WebSocket connection handling with state tracking, ping/pong health checks, reconnection logic, and comprehensive tests. Continuing with data validation and event routing implementation.
 
 # ⁉️ Executor’s Feedback or Assistance Requests
 None at this time.
 
 # 🔋 Vibe Meter
-Current energy: 😃😃😐😴😴
+Current energy: 😃😃😃😐😴
+
+# 🔧 Review Notes
+- 🛑 Blocker: Full test suite fails with 16 failures and 7 errors (critical issues in `ingest`, `pipeline`, `stream`, `model_export`, UI endpoints, and WS modules). Tests must pass before proceeding.
+- ⚠ Minor Fixes: Flake8 reports extensive style violations (E501, E402, W293) across `examples/` and `wave/ui/` directories. Address formatting and import order.
+
+## TDD Approach for Task 16
+
+### Phase 1: Test Analysis & Isolation (Red Verification)
+- Run individual failing tests to confirm exact failures (no guesswork)
+- Isolate each test to determine if failures are interdependent
+- Document expected vs. actual behavior for each test
+
+### Phase 2: Minimal Fixes (Green)
+- Apply TDD to each sub-task: Red → Green → Refactor
+- Prioritize critical path: Fix messaging-related and schema validation failures first
+- One test at a time, smallest changes possible to pass
+
+### Phase 3: Integration Verification (Refactor)
+- After individual tests pass, run full test suite to ensure no regressions
+- Move successful tests to stable/ directory
+- Apply consistent patterns across similar fixes
+- Clean up technical debt introduced during initial fixes
