@@ -1,3 +1,4 @@
+# Core dependencies
 typer
 polars
 pandera
@@ -9,7 +10,26 @@ tslearn
 requests
 fastapi
 uvicorn[standard]
-dash
+dash==2.1.0  # Pin Dash for Flask 2.1.x compatibility
+Werkzeug<2.1.0  # Pin Werkzeug to pre-2.1.0 for Dash compatibility
+dash-bootstrap-components==1.0.0 # Pin for Dash 2.1.x compatibility
 schemathesis
 prometheus_client
 playwright
+websockets
+pytest-asyncio
+
+# PyTorch and ML dependencies
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+numpy>=1.25.0,<2.0.0 # Pin to avoid NumPy 2.x issues with older compiled packages
+matplotlib>=3.5.0
+plotly>=5.10.0
+streamlit>=1.30.0
+tensorboard>=2.10.0
+
+# Development dependencies
+pytest-cov
+mypy
+ruff

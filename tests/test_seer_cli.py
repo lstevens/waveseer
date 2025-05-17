@@ -6,6 +6,8 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 from wave.seer import app
+import yaml
+import shutil
 
 class DummyResponse:
     def __init__(self, status_code, data=None):
@@ -35,7 +37,7 @@ def test_seer_cli_without_stream(monkeypatch, capsys):
         return DummyResponse(200, {"pattern_id": "p1", "score": 0.5})
     monkeypatch.setattr("wave.seer.requests.post", fake_post)
     runner = CliRunner()
-    result = runner.invoke(app, ["seer", "--symbol", "SYM", "--tf", "1m", "--api-url", "http://api"])
+    result = runner.invoke(app, ["--symbol", "SYM", "--tf", "1m", "--api-url", "http://api"])
     assert result.exit_code == 0
     # one match call, no stream
     assert any("/match" in url for url, _ in calls)
@@ -56,7 +58,7 @@ def test_seer_cli_with_stream(monkeypatch):
             return DummyResponse(200)
     monkeypatch.setattr("wave.seer.requests.post", fake_post)
     runner = CliRunner()
-    result = runner.invoke(app, ["seer", "--symbol", "SYM", "--tf", "1m",
+    result = runner.invoke(app, ["--symbol", "SYM", "--tf", "1m",
                                  "--api-url", "http://api",
                                  "--stream-url", "http://api"])
     assert result.exit_code == 0
@@ -70,3 +72,16 @@ def test_seer_cli_with_stream(monkeypatch):
     payload = json.loads(printed)
     assert payload["pattern_id"] == "p2"
     assert payload["score"] == 0.8
+
+def test_seer_cli_error_on_missing_cache(tmp_path, monkeypatch):
+    # Simulate missing build/cache layout
+    # Remove directories created by autouse fixture
+    shutil.rmtree(tmp_path / "build", ignore_errors=True)
+    # Write only config
+    (tmp_path / "config.yml").write_text(yaml.dump({"symbols": ["SYM"], "timeframes": [{"tf": "1m", "windows": [2]}]}))
+    # Run CLI
+    runner = CliRunner()
+    result = runner.invoke(app, ["--symbol", "SYM", "--tf", "1m", "--api-url", "http://api"])
+    # Should fail due to missing cache data
+    assert result.exit_code != 0
+    assert "build/cache" in result.stdout.lower()

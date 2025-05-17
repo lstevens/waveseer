@@ -1,28 +1,148 @@
 version: '3.8'
+
 services:
+  # API Server - core service for pattern detection
   api:
-    build: .
-    command: ["uvicorn", "wave.api.app:app", "--host", "0.0.0.0", "--port", "9000"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: waveseer/api:latest
     ports:
       - "9000:9000"
     volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./config.yml:/app/config.yml
+    environment:
+      - PYTHONPATH=/app
+      - WAVESEER_MODELS_DIR=/app/models
+      - LOG_LEVEL=INFO
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    depends_on:
+      chart-service:
+        condition: service_healthy
+  
+  # Development version of API with hot reload
+  api-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "9000:9000"
+    volumes:
+      - .:/app  # Mount entire codebase for development
+    environment:
+      - PYTHONPATH=/app
+      - WAVESEER_MODELS_DIR=/app/models
+      - LOG_LEVEL=DEBUG
+    depends_on:
+      chart-service:
+        condition: service_healthy
+    profiles: ["dev"]
+  
+  # Chart rendering service
+  chart-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: ["python", "-c", "from wave.charts import serve; serve()"]
+    ports:
+      - "8010:8010"
+    volumes:
       - .:/app
+    environment:
+      PYTHONPATH: /app
+      WAVESEER_MODELS_DIR: /app/models
+      LOG_LEVEL: INFO
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8010/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+  
+  # Web UI for pattern visualization
   ui:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev  # Use dev Dockerfile for UI
     command: ["python", "-c", "from wave.ui.app import run; run()"]
     ports:
       - "8050:8050"
     volumes:
       - .:/app
+    environment:
+      - PYTHONPATH=/app
+      - WAVESEER_MODELS_DIR=/app/models
+      - LOG_LEVEL=INFO
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+  
+  # Pattern detection background worker
   seer:
     build: .
-    command: ["wave", "seer", "--symbol", "BTCUSDT", "--tf", "1m"]
+    image: waveseer/seer:latest
+    command: ["waveseer", "detect", "--symbol", "BTCUSDT", "--tf", "1m"]
     volumes:
-      - .:/app
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./config.yml:/app/config.yml
+    environment:
+      - PYTHONPATH=/app
+      - WAVESEER_MODELS_DIR=/app/models
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+  
+  # Data ingestion service
   ingest:
     build: .
+    image: waveseer/ingest:latest
     command: ["uvicorn", "wave.ingest:ws_app", "--host", "0.0.0.0", "--port", "8000"]
     ports:
       - "8000:8000"
     volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./config.yml:/app/config.yml
+    environment:
+      - PYTHONPATH=/app
+      - WAVESEER_MODELS_DIR=/app/models
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    
+  # Annotation interface (Streamlit)
+  annotate:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: ["streamlit", "run", "wave/annotation/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+    ports:
+      - "8501:8501"
+    volumes:
       - .:/app
+      - ./data:/app/data
+    environment:
+      - PYTHONPATH=/app
+      - WAVESEER_MODELS_DIR=/app/models
+      - LOG_LEVEL=INFO
+      - API_URL=http://api:9000
+    depends_on:
+      api:
+        condition: service_healthy
+    profiles: ["annotation"]
+
+volumes:
+  models:
+  data:

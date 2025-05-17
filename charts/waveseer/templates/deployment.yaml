@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "waveseer.fullname" . }}-api
+  labels:
+    app: {{ include "waveseer.name" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "waveseer.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "waveseer.name" . }}
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.api.service.port }}

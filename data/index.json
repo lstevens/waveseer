@@ -1,0 +1,145 @@
+[
+  {
+    "path": "data/btcusd_1-min_2017.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  },
+  {
+    "path": "data/btcusd_1-min_2016.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  },
+  {
+    "path": "data/btcusd_1-min_2014.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  },
+  {
+    "path": "data/btcusd_1-min_2015.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  },
+  {
+    "path": "data/btcusd_1-min_2012.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  },
+  {
+    "path": "data/btcusd_1-min_2013.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  },
+  {
+    "path": "data/btcusd_1-min_2022.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  },
+  {
+    "path": "data/btcusd_1-min_2023.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  },
+  {
+    "path": "data/btcusd_1-min_2021.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  },
+  {
+    "path": "data/btcusd_1-min_2020.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  },
+  {
+    "path": "data/btcusd_1-min_2018.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  },
+  {
+    "path": "data/btcusd_1-min_2024.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  },
+  {
+    "path": "data/btcusd_1-min_2019.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  }
+]

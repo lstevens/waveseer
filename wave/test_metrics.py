@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 
 from wave.api.app import app as api_app

@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "waveseer.fullname" . }}-chart
+  labels:
+    {{- include "waveseer.labels" . | nindent 4 }}
+    app.kubernetes.io/component: chart-service
+spec:
+  {{- if not .Values.chartService.autoscaling.enabled }}
+  replicas: {{ .Values.chartService.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "waveseer.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: chart-service
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.chartService.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "waveseer.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: chart-service
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.chartService.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-chart
+          securityContext:
+            {{- toYaml .Values.chartService.securityContext | nindent 12 }}
+          image: "{{ .Values.chartService.image.repository }}:{{ .Values.chartService.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.chartService.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8010
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.chartService.resources | nindent 12 }}
+          volumeMounts:
+            - name: cache-volume
+              mountPath: /app/build/cache
+            - name: config-volume
+              mountPath: /app/config.yml
+              subPath: config.yml
+      {{- with .Values.chartService.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.chartService.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.chartService.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: cache-volume
+          {{- if .Values.chartService.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "waveseer.fullname" . }}-chart-data
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: config-volume
+          configMap:
+            name: {{ include "waveseer.fullname" . }}-config

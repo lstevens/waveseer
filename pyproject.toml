@@ -1,0 +1,100 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "waveseer"
+version = "1.0.0"
+description = "Pattern detection in financial time series data using machine learning"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.8"
+authors = [
+    { name = "Waveseer Team" }
+]
+keywords = ["pattern-detection", "machine-learning", "financial", "time-series"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "torch>=1.9.0",
+    "numpy>=1.20.0",
+    "pandas>=1.3.0",
+    "scikit-learn>=1.0.0",
+    "matplotlib>=3.4.0",
+    "fastapi>=0.75.0",
+    "uvicorn>=0.17.0",
+    "typer>=0.4.0",
+    "pydantic>=1.9.0",
+    "duckdb>=0.3.0",
+    "prometheus-client>=0.13.0",
+    "sqlalchemy>=1.4.0",
+    "psycopg2-binary>=2.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=3.0.0",
+    "black>=22.1.0",
+    "isort>=5.10.0",
+    "mypy>=0.931",
+    "ruff>=0.0.50",
+]
+vis = [
+    "plotly>=5.6.0",
+    "dash>=2.3.0",
+]
+notebook = [
+    "jupyter>=1.0.0",
+    "ipywidgets>=7.7.0",
+]
+
+[project.scripts]
+waveseer = "wave.cli:app"
+waveseer-api = "wave.api:api_cmd"
+
+[tool.setuptools]
+packages = ["wave"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.black]
+line-length = 100
+target-version = ["py38"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+select = ["E", "F", "B"]
+ignore = ["E203"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+
+[tool.windsweeper]
+task_ping_threshold = 3
+coverage_delta_threshold = 50
+coverage_test_threshold = 10
+red_gate_tasks = ["@critical"]
+digest_threshold = 5
+branch_idle_threshold = 7

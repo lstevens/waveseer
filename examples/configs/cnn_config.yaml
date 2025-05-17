@@ -1,0 +1,101 @@
+# Convolutional Neural Network (CNN) Configuration
+# This configuration is optimized for short-term pattern recognition
+
+# Experiment information
+name: cnn_pattern_detector
+version: "0.1.0"
+description: "Chart pattern detection using CNN architecture"
+tags:
+  - cnn
+  - pattern_detection
+  - price_action
+notes: "CNN model optimized for short-term pattern detection with multi-scale feature extraction"
+
+# Model configuration
+model:
+  model_type: "cnn"  # Use CNN architecture
+  
+  # Feature dimensions
+  input_size: 5      # OHLCV features
+  num_classes: 10    # Number of pattern types to detect
+  
+  # Model architecture
+  hidden_size: 128   # Size of hidden layers
+  dropout: 0.3       # Dropout for regularization
+  
+  # CNN-specific parameters
+  kernel_sizes: [3, 5, 7]  # Multi-scale feature extraction with different kernel sizes
+  channels: [64, 128, 256] # Increasing channel dimensions for feature hierarchy
+
+# Optimizer settings
+optimizer:
+  optimizer: "adam"
+  learning_rate: 0.001
+  weight_decay: 0.0001  # L2 regularization
+  beta1: 0.9
+  beta2: 0.999
+  
+  # Learning rate scheduling
+  lr_scheduler: "cosine"  # Cosine annealing scheduler
+  lr_min: 0.00005
+  
+  # Gradient clipping to prevent exploding gradients
+  clip_grad_norm: 1.0
+
+# Data configuration
+data:
+  # Dataset generation
+  synthetic_data: true
+  n_samples: 5000            # Generate 5000 synthetic samples
+  sequence_length: 64        # 64-point sequences (appropriate for CNN)
+  
+  # Patterns to detect
+  pattern_types:
+    - HEAD_AND_SHOULDERS
+    - INVERSE_HEAD_AND_SHOULDERS
+    - DOUBLE_TOP
+    - DOUBLE_BOTTOM
+    - TRIANGLE_ASCENDING
+    - TRIANGLE_DESCENDING
+    - TRIANGLE_SYMMETRICAL
+    - CHANNEL_UP
+    - CHANNEL_DOWN
+    - FLAG
+  
+  # Data splitting
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+  stratify: true
+  
+  # Data loading
+  batch_size: 64
+  num_workers: 4
+  shuffle: true
+  
+  # Data augmentation (increases model robustness)
+  augmentation: true
+  noise_level: 0.05
+  shift_prob: 0.5
+  flip_prob: 0.3
+  scale_prob: 0.5
+
+# Training parameters
+train:
+  epochs: 50
+  early_stopping: true
+  patience: 7
+  val_frequency: 1
+  checkpoint_dir: "checkpoints/cnn"
+  save_best: true
+  save_last: true
+  save_frequency: 5
+  metrics:
+    - accuracy
+    - f1
+    - precision
+    - recall
+  use_cuda: true
+  seed: 42
+  verbose: true
+  progress_bar: true

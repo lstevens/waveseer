@@ -1,0 +1,49 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "waveseer-metrics",
+    "title": "WaveSeer Metrics",
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 0,
+    "refresh": "5s",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "Request Rate",
+        "gridPos": {"x": 0, "y": 0, "w": 12, "h": 6},
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_total[1m])",
+            "legendFormat": "{{status}} {{method}} {{handler}}",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "type": "graph",
+        "title": "CPU Usage",
+        "gridPos": {"x": 12, "y": 0, "w": 12, "h": 6},
+        "targets": [
+          {
+            "expr": "process_cpu_seconds_total",
+            "refId": "B"
+          }
+        ]
+      },
+      {
+        "type": "graph",
+        "title": "Memory Usage",
+        "gridPos": {"x": 0, "y": 6, "w": 12, "h": 6},
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes",
+            "refId": "C"
+          }
+        ]
+      }
+    ],
+    "templating": {"list": []},
+    "annotations": {"list": []}
+  }
+}

@@ -1,0 +1,114 @@
+# Production-Optimized Pattern Detection Configuration
+# Task-ID: #5 - Optimized for inference speed and deployment
+
+# Experiment information
+name: production_pattern_detector
+version: "0.1.0"
+description: "Production-ready chart pattern detection with inference optimization"
+tags:
+  - production
+  - optimized
+  - deployment
+  - pattern_detection
+notes: "Lightweight model optimized for inference speed and deployment, with quantization support"
+
+# Model configuration
+model:
+  model_type: "hybrid"  # Hybrid provides good balance of accuracy and speed
+  
+  # Feature dimensions
+  input_size: 5      # OHLCV features
+  num_classes: 10    # Number of pattern types to detect
+  
+  # Model architecture - smaller than research models for faster inference
+  hidden_size: 64    # Reduced size for faster inference
+  num_layers: 1      # Single layer LSTM is faster
+  dropout: 0.1       # Less dropout for production
+  
+  # CNN parameters (for feature extraction) - smaller and faster
+  kernel_sizes: [3, 5]    # Fewer kernels
+  channels: [32, 64]      # Fewer channels
+  
+  # LSTM parameters
+  bidirectional: false    # Unidirectional for speed (half the computation)
+
+# Optimizer settings
+optimizer:
+  optimizer: "adam"
+  learning_rate: 0.001
+  weight_decay: 0.0001   # Keep some regularization
+  
+  # Simple step scheduler for predictable convergence
+  lr_scheduler: "step"
+  lr_step_size: 15
+  lr_gamma: 0.1
+  
+  # Minimal gradient clipping
+  clip_grad_norm: 1.0
+
+# Data configuration
+data:
+  # Dataset generation
+  synthetic_data: true
+  n_samples: 15000           # More data for generalization
+  sequence_length: 60        # Shorter sequence for faster inference
+  
+  # Focused on most common patterns for production
+  pattern_types:
+    - HEAD_AND_SHOULDERS
+    - INVERSE_HEAD_AND_SHOULDERS
+    - DOUBLE_TOP
+    - DOUBLE_BOTTOM
+    - TRIANGLE_ASCENDING
+    - TRIANGLE_DESCENDING
+    - FLAG
+  
+  # Data splitting - more test data for thorough validation
+  train_ratio: 0.7
+  val_ratio: 0.1
+  test_ratio: 0.2           # More thorough testing
+  stratify: true
+  
+  # Efficient data loading
+  batch_size: 128           # Larger batches for faster training
+  num_workers: 8            # More workers for data loading
+  shuffle: true
+  
+  # Minimal augmentation for production models
+  augmentation: true
+  noise_level: 0.02         # Less noise
+  shift_prob: 0.3           # Less augmentation
+  flip_prob: 0.2
+  scale_prob: 0.3
+
+# Training parameters
+train:
+  epochs: 40                # Fewer epochs for faster training
+  early_stopping: true
+  patience: 5               # More aggressive early stopping
+  val_frequency: 1
+  checkpoint_dir: "checkpoints/production"
+  save_best: true
+  save_last: false          # Only keep best model
+  save_frequency: 10
+  metrics:
+    - accuracy
+    - f1
+    - precision
+    - recall
+  use_cuda: true
+  seed: 42
+  verbose: true
+  progress_bar: true
+
+# Production deployment settings (extra section)
+deployment:
+  export_format: "torchscript"  # Export to TorchScript for deployment
+  quantize: true                # Apply quantization to reduce model size
+  quantization_method: "dynamic" # Dynamic quantization for balanced speed/accuracy
+  optimize_memory: true         # Optimize for memory usage
+  target_platforms:             # Target deployment platforms
+    - cpu
+    - cuda
+  benchmark: true               # Run benchmarks after training
+  latency_target_ms: 10         # Target inference latency in milliseconds

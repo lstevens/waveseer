@@ -8,7 +8,27 @@ on:
 
 jobs:
   test:
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: crypto_heatmap
+      DB_USER: postgres
+      DB_PASSWORD: postgres
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: crypto_heatmap
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -20,20 +40,37 @@ jobs:
           activate-environment: wave-seer
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          # Install linting tools
+          pip install flake8
 
       - name: Install Playwright browsers
         run: python -m playwright install chromium
 
       - name: Run UI End-to-End tests
-        run: pytest wave/test_ui_e2e.py wave/test_ui_reconnect_e2e.py -q
+        run: pytest tests/test_ui_e2e.py tests/test_ui_reconnect.py -q
         env:
           CI: true
 
       - name: Run tests
-        run: pytest -q
+        run: pytest tests -q --maxfail=1 --disable-warnings
         env:
           CI: true
 
       - name: Run Helm chart tests
         run: bash scripts/test-helm.sh
+
+      - name: Lint with flake8
+        run: flake8 .
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Lint JS with ESLint
+        run: npm run lint:js

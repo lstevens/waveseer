@@ -3,6 +3,7 @@ import pytest
 pytest.importorskip("dash.testing.application_runners")
 pytest.importorskip("multiprocess")
 pytest.importorskip("uvicorn")
+pytestmark = pytest.mark.integration
 import requests
 from dash.testing.application_runners import import_app
 from pathlib import Path

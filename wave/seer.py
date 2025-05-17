@@ -1,8 +1,10 @@
 import typer
 import yaml
 from pathlib import Path
+from typing import Optional
 import requests
 import json
+import typer
 import polars as pl
 
 app = typer.Typer()
@@ -12,7 +14,7 @@ def seer(
     symbol: str = typer.Option(..., help="Symbol to monitor"),
     tf: str = typer.Option(..., help="Timeframe, e.g., '1m'"),
     api_url: str = typer.Option("http://127.0.0.1:9000", help="Pattern API base URL"),
-    stream_url: str = typer.Option("http://127.0.0.1:8000/stream", help="Streaming endpoint URL")
+    stream_url: Optional[str] = typer.Option(None, help="Streaming endpoint URL"),
 ):
     """Streaming SeerAgent: emit PatternHit events"""
     # load config
@@ -23,12 +25,17 @@ def seer(
         raise typer.Exit(code=1)
     windows = tf_cfg.get("windows", [])
 
+    # Ensure cache file exists
+    cache_file = Path("build/cache") / symbol / f"{tf}.parquet"
+    if not cache_file.exists():
+        typer.echo(f"Cache file missing: {cache_file}")
+        raise typer.Exit(code=1)
     # read price data
-    df = pl.read_parquet(f"build/cache/{symbol}/{tf}.parquet")
+    df = pl.read_parquet(str(cache_file))
     dates = df["datetime"].to_list()
     closes = df["close"].to_list()
 
-    # sliding windows
+    # Iterate sliding windows
     for w in windows:
         for idx in range(len(closes) - w + 1):
             seq = closes[idx: idx + w]
@@ -52,7 +59,6 @@ def seer(
                     requests.post(f"{stream_url}/stream", json=event)
                 except Exception as e:
                     typer.echo(f"Stream error: {e}")
-    return
 
 if __name__ == "__main__":
     app()

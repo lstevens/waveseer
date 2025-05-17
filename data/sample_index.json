@@ -1,0 +1,24 @@
+[
+  {
+    "path": "data/sample/btcusd_1-min_2017.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  },
+  {
+    "path": "data/sample/btcusd_1-min_2016.csv",
+    "columns": {
+      "timestamp": "Timestamp",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "close": "Close",
+      "volume": "Volume"
+    }
+  }
+]

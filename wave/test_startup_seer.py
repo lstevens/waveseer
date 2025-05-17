@@ -3,6 +3,7 @@ import yaml
 from pathlib import Path
 import wave.ingest as ingest
 
+
 def test_start_seer_agents(monkeypatch):
     # Fake config.yml content
     fake_cfg = {'timeframes': [{'tf': '1m'}, {'tf': '5m'}]}

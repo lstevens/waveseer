@@ -10,6 +10,13 @@
     th { background: #f4f4f4; }
     tbody tr:nth-child(odd) { background: #fafafa; }
     thead th { position: sticky; top: 0; z-index: 1; }
+    tr.pattern-row { cursor: pointer; }
+    tr.pattern-row:hover { background-color: #f0f0f0; }
+    .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
+    .modal-content { background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); }
+    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+    .close:hover { color: black; }
+    #chart-frame { width: 100%; height: 600px; border: none; }
   </style>
 </head>
 <body>
@@ -18,10 +25,20 @@
   <div id='error' style='color:red; display:none; margin-bottom:10px;'></div>
   <table id="events">
     <thead>
-      <tr><th>Timestamp</th><th>TF</th><th>Pattern ID</th><th>Score</th></tr>
+      <tr><th>Timestamp</th><th>TF</th><th>Pattern ID</th><th>Score</th><th>Actions</th></tr>
     </thead>
     <tbody></tbody>
   </table>
+  
+  <!-- Chart Modal -->
+  <div id="chart-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 id="chart-title"></h2>
+      <div id="chart-loading">Loading chart...</div>
+      <iframe id="chart-frame" style="display:none;"></iframe>
+    </div>
+  </div>
 
   <script>
     const wsUrl = 'ws://' + window.location.host + '/ws/ingest';
@@ -33,6 +50,58 @@
     // Reconnect backoff
     let reconnectDelay = 1000;
     const maxReconnectDelay = 30000;
+    
+    // Chart modal elements
+    const modal = document.getElementById('chart-modal');
+    const chartTitle = document.getElementById('chart-title');
+    const chartFrame = document.getElementById('chart-frame');
+    const chartLoading = document.getElementById('chart-loading');
+    const closeBtn = document.querySelector('.close');
+    
+    // Close the modal when clicking the X
+    closeBtn.onclick = function() {
+      modal.style.display = 'none';
+      chartFrame.src = '';
+    }
+    
+    // Close the modal when clicking outside of it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = 'none';
+        chartFrame.src = '';
+      }
+    }
+    
+    // Function to show chart modal for a pattern
+    function showChart(event) {
+      // Extract data and ensure defaults
+      const symbol = event.symbol || 'btcusd';
+      const tf = event.tf || '1m';
+      const timestamp = event.ts_start;
+      const patternId = event.pattern_id || 'unknown';
+      
+      console.log('Opening chart with params:', { symbol, tf, timestamp, patternId });
+      
+      // Show modal
+      modal.style.display = 'block';
+      chartTitle.textContent = `${symbol.toUpperCase()} ${tf} Pattern: ${patternId}`;
+      
+      // Show loading, hide frame
+      chartLoading.style.display = 'block';
+      chartFrame.style.display = 'none';
+      
+      // Build chart URL with proper defaults
+      const chartUrl = `/chart?symbol=${symbol}&tf=${tf || '1m'}&start=${encodeURIComponent(timestamp)}&window=60`;
+      
+      // Load chart in iframe
+      chartFrame.src = chartUrl;
+      
+      // Hide loading when chart loads
+      chartFrame.onload = function() {
+        chartLoading.style.display = 'none';
+        chartFrame.style.display = 'block';
+      };
+    }
 
     function connect() {
       statusEl.textContent = 'Connecting...';
@@ -50,17 +119,38 @@
       ws.onmessage = (evt) => {
         try {
           const ev = JSON.parse(evt.data);
+          console.log('Pattern event received:', ev);
+
+          // Extract fields with fallbacks
+          const tsStart = ev.ts_start;
+          const symbol = ev.symbol || ev.symbol?.toLowerCase() || 'unknown';
+          const tf = ev.tf || '1m';
+          const patternId = ev.pattern_id ?? ev.pattern ?? 'unknown';
+          const score = ev.score;
+
           const row = document.createElement('tr');
+          row.className = 'pattern-row';
+          row.dataset.timestamp = tsStart;
+          row.dataset.symbol = symbol;
+          row.dataset.tf = tf;
+          row.dataset.patternId = patternId;
+
           row.innerHTML = `
-            <td>${ev.ts_start}</td>
-            <td>${ev.tf}</td>
-            <td>${ev.pattern_id}</td>
-            <td>${ev.score}</td>
+            <td>${tsStart}</td>
+            <td>${tf}</td>
+            <td>${patternId}</td>
+            <td>${score}</td>
+            <td><button class="view-chart-btn">View Chart</button></td>
           `;
           tbody.prepend(row);
+          
           if (tbody.children.length > MAX_ROWS) {
             tbody.removeChild(tbody.lastChild);
           }
+          
+          // Add click handler to the view chart button
+          const viewBtn = row.querySelector('.view-chart-btn');
+          viewBtn.addEventListener('click', () => showChart(ev));
         } catch (e) {
           console.error('Invalid message', evt.data);
         }

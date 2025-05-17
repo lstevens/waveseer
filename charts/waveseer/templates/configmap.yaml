@@ -1,0 +1,11 @@
+{{- define "waveseer.configmap" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "waveseer.fullname" . }}-config
+  labels:
+    {{- include "waveseer.labels" . | nindent 4 }}
+data:
+  config.yml: |-
+{{ toYaml .Values.config | indent 4 }}
+{{- end -}}

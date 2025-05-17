@@ -2,6 +2,8 @@ import pytest
 from starlette.testclient import TestClient
 from wave.api.app import app
 
+pytestmark = pytest.mark.integration
+
 @pytest.mark.asyncio
 async def test_ws_streaming():
     client = TestClient(app)

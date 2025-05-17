@@ -41,6 +41,39 @@ run()
 EOF
 
 # Access Dash UI at http://localhost:8050/
+
+# Crypto Heatmap Integration
+
+## CLI Usage
+
+List patterns:
+```bash
+waveseer crypto list-patterns \
+  --symbol BTCUSDT \
+  --tf 1m \
+  --start 2025-05-03T00:00:00Z \
+  --end 2025-05-03T01:00:00Z
+```
+Run detection pipeline:
+```bash
+waveseer crypto run-patterns \
+  --symbol BTCUSDT \
+  --tf 1m \
+  --start 2025-05-03T00:00:00Z \
+  --end 2025-05-03T01:00:00Z
+```
+
+## API Endpoints
+
+List stored patterns:
+```bash
+curl "http://localhost:9000/crypto/patterns?symbol=BTCUSDT&tf=1m&start=2025-05-03T00:00:00Z&end=2025-05-03T01:00:00Z"
+```
+Run and retrieve patterns:
+```bash
+curl -X POST http://localhost:9000/crypto/patterns/run \
+  -H "Content-Type: application/json" \
+  -d '{"symbol":"BTCUSDT","timeframe":"1m","start":"2025-05-03T00:00:00Z","end":"2025-05-03T01:00:00Z"}'
 ```
 
 ## Local Kubernetes Deployment
@@ -85,6 +118,24 @@ pytest wave/test_metrics.py -q
 bash scripts/test-helm.sh
 ```
 
+### Kind Cluster Integration Tests
+
+```bash
+bash scripts/test-kind.sh
+```
+
+### Load Testing
+
+```bash
+bash scripts/test-load.sh
+```
+
+### E2E Validation Under Load
+
+```bash
+bash scripts/test-e2e-load.sh
+```
+
 ### UI End-to-End
 
 ```bash
@@ -99,6 +150,34 @@ The CI workflow is defined in `.github/workflows/ci.yml` and covers:
 - Python unit & integration tests
 - Helm lint & template tests
 - UI end-to-end tests
+
+## Branch Strategy
+
+This project follows a structured branch strategy:
+
+- `main` - Stable production-ready code. Protected branch requiring PR approvals.
+- `feature/<name>` - Feature development branches for new functionality.
+- `riff/<name>` - Experimental branches for spikes and explorations (≤ 1 week lifetime).
+
+### Git Workflow
+
+```bash
+# Start a new feature
+git checkout -b feature/new-pattern-detection main
+
+# Commit changes with descriptive messages
+git commit -m "Task-ID: #42 – Add head and shoulders pattern detection"
+
+# Start an experimental spike
+git checkout -b riff/ml-detection main
+```
+
+### Pull Request Process
+
+1. Create PR from feature branch to main
+2. Ensure CI passes (tests, linting, type checking)
+3. Address review comments
+4. Squash and merge to main
 
 ## License
 

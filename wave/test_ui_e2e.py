@@ -24,6 +24,7 @@ def server():
     proc.terminate()
     proc.wait()
 
+
 def test_ui_e2e():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)

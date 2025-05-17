@@ -1,5 +1,40 @@
 replicaCount: 1
 
+# Chart Service Configuration
+chartService:
+  replicaCount: 1
+  image:
+    repository: waveseer/chart-service
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  podSecurityContext: {}
+  securityContext: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  persistence:
+    enabled: true
+    accessMode: ReadWriteOnce
+    size: 1Gi
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 80
+
+config: {}
+
 api:
   image:
     repository: waveseer

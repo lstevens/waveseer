@@ -74,16 +74,29 @@ def scan(
                 raise
             typer.echo(f"Stored motif_idx for {symbol}/{tf}")
 
+
 def _compute_symbol(symbol, tf, windows):
     """Helper for parallel scan: returns pandas DataFrame of motif_idx for a symbol"""
     import polars as pl
     import stumpy
     from pathlib import Path
     dfs = []
-    parquet = Path("build/cache") / symbol / f"{tf}.parquet"
-    if not parquet.exists():
+    # Determine data directory: prefer build/cache, else use symbol/tf directory
+    cache_dir = Path("build/cache")
+    if cache_dir.exists():
+        search_dir = cache_dir / symbol
+    else:
+        search_dir = Path(symbol) / tf
+    # Collect parquet files
+    parquet_files = list(search_dir.glob("*.parquet"))
+    if not parquet_files:
         return pd.DataFrame()
-    df = pl.read_parquet(str(parquet))
+    # Process each parquet file
+    df_list = []
+    for pq in parquet_files:
+        df_list.append(pl.read_parquet(str(pq)))
+    # Concatenate if multiple files
+    df = pl.concat(df_list)
     # ensure float64 dtype and contiguous layout for stumpy
     import numpy as np
     ts = np.ascontiguousarray(df["close"].to_numpy(), dtype=np.float64)

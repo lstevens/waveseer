@@ -1,0 +1,106 @@
+# Hybrid CNN-LSTM Configuration
+# This configuration leverages both CNN for feature extraction and LSTM for temporal analysis
+
+# Experiment information
+name: hybrid_pattern_detector
+version: "0.1.0"
+description: "Chart pattern detection using Hybrid CNN-LSTM architecture"
+tags:
+  - hybrid
+  - cnn-lstm
+  - pattern_detection
+  - deep_learning
+notes: "Combined CNN-LSTM architecture that leverages spatial feature extraction followed by temporal analysis"
+
+# Model configuration
+model:
+  model_type: "hybrid"  # Use Hybrid CNN-LSTM architecture
+  
+  # Feature dimensions
+  input_size: 5      # OHLCV features
+  num_classes: 10    # Number of pattern types to detect
+  
+  # Model architecture
+  hidden_size: 128   # Size of LSTM cell hidden state
+  num_layers: 2      # Two-layer stacked LSTM after CNN
+  dropout: 0.25      # Dropout for regularization
+  
+  # CNN parameters (for feature extraction)
+  kernel_sizes: [3, 5, 5]  # Multi-scale feature extraction
+  channels: [32, 64, 128]  # Increasing channel dimensions
+  
+  # LSTM parameters (for sequence modeling)
+  bidirectional: true     # Use bidirectional LSTM
+
+# Optimizer settings
+optimizer:
+  optimizer: "adam"
+  learning_rate: 0.00075  # Balanced learning rate for hybrid model
+  weight_decay: 0.0001    # L2 regularization
+  beta1: 0.9
+  beta2: 0.999
+  
+  # Learning rate scheduling
+  lr_scheduler: "cosine"  # Cosine annealing scheduler
+  lr_min: 0.0001
+  
+  # Gradient clipping
+  clip_grad_norm: 0.75
+
+# Data configuration
+data:
+  # Dataset generation
+  synthetic_data: true
+  n_samples: 7500            # Generate more samples for hybrid model
+  sequence_length: 100       # Balanced sequence length
+  
+  # Patterns to detect
+  pattern_types:
+    - HEAD_AND_SHOULDERS
+    - INVERSE_HEAD_AND_SHOULDERS
+    - DOUBLE_TOP
+    - DOUBLE_BOTTOM
+    - TRIANGLE_ASCENDING
+    - TRIANGLE_DESCENDING
+    - TRIANGLE_SYMMETRICAL
+    - CHANNEL_UP
+    - CHANNEL_DOWN
+    - FLAG
+  
+  # Data splitting
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+  stratify: true
+  
+  # Data loading
+  batch_size: 48            # Balanced batch size
+  num_workers: 4
+  shuffle: true
+  
+  # Data augmentation
+  augmentation: true
+  noise_level: 0.04
+  shift_prob: 0.5
+  flip_prob: 0.3
+  scale_prob: 0.5
+
+# Training parameters
+train:
+  epochs: 60
+  early_stopping: true
+  patience: 8
+  val_frequency: 1
+  checkpoint_dir: "checkpoints/hybrid"
+  save_best: true
+  save_last: true
+  save_frequency: 5
+  metrics:
+    - accuracy
+    - f1
+    - precision
+    - recall
+  use_cuda: true
+  seed: 42
+  verbose: true
+  progress_bar: true

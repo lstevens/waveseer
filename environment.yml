@@ -1,0 +1,25 @@
+name: waveseer
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pyyaml
+  - httpx
+  - requests
+  - dash
+  - pandas
+  - pip:
+      - torch
+      - uvicorn
+      - typer
+      - polars
+      - pydantic
+      - psycopg2-binary
+      - pyarrow
+      - fastapi
+      - pytest
+      - python-dotenv
+      - prometheus_client
+      # Add any additional pip-only dependencies below

@@ -61,7 +61,23 @@ def cluster(tf: str = typer.Option(..., help="Timeframe, e.g. '1h'"),
         return
     # skip grouping if only one motif
     if len(df_idx) < 2:
-        typer.echo("Not enough motifs to cluster")
+        typer.echo("Not enough motifs to cluster, creating default cluster")
+        # For single motif, assign to default cluster 0
+        for _, row in df_idx.iterrows():
+            symbol = row['symbol']
+            w = int(row['window'])
+            motif_idx = int(row['idx'])
+            pattern_id = f"{symbol}_{tf}_w{w}_c0"
+            # Insert pattern entry if not exists
+            try:
+                db.execute('INSERT INTO patterns (pattern_id, label) VALUES(?,?)', (pattern_id, pattern_id))
+            except Exception:
+                pass
+            # Insert cluster entry
+            db.execute(
+                'INSERT INTO clusters (symbol, tf, "window", cluster_id, motif_idx) VALUES(?,?,?,?,?)',
+                (symbol, tf, int(w), 0, motif_idx)
+            )
         return
     # group by symbol/window
     # clear previous clusters
@@ -81,6 +97,22 @@ def cluster(tf: str = typer.Option(..., help="Timeframe, e.g. '1h'"),
         raise
     # load series per symbol
     for (symbol, w), group in df_idx.groupby(["symbol", "window"]):
+        # handle single-motif per symbol: assign default cluster
+        if len(group) < 2:
+            for _, row in group.iterrows():
+                motif_idx = int(row["idx"])
+                pattern_id = f"{symbol}_{tf}_w{w}_c0"
+                # insert pattern
+                try:
+                    db.execute('INSERT INTO patterns (pattern_id, label) VALUES(?,?)', (pattern_id, pattern_id))
+                except Exception:
+                    pass
+                # insert cluster entry
+                db.execute(
+                    'INSERT INTO clusters (symbol, tf, "window", cluster_id, motif_idx) VALUES(?,?,?,?,?)',
+                    (symbol, tf, int(w), 0, motif_idx)
+                )
+            continue
         # read time series
         parquet = Path("build/cache") / symbol / f"{tf}.parquet"
         df_ts = pl.read_parquet(str(parquet))
@@ -102,7 +134,22 @@ def cluster(tf: str = typer.Option(..., help="Timeframe, e.g. '1h'"),
             linkage=cfg_cluster.get("linkage", "average"),
             distance_threshold=max_dtw
         )
-        labels = clustering.fit_predict(D)
+        try:
+            labels = clustering.fit_predict(D)
+        except ValueError:
+            # fallback for single-motif group
+            for _, row in group.iterrows():
+                motif_idx = int(row["idx"])
+                pattern_id = f"{symbol}_{tf}_w{w}_c0"
+                try:
+                    db.execute('INSERT INTO patterns (pattern_id, label) VALUES(?,?)', (pattern_id, pattern_id))
+                except Exception:
+                    pass
+                db.execute(
+                    'INSERT INTO clusters (symbol, tf, "window", cluster_id, motif_idx) VALUES(?,?,?,?,?)',
+                    (symbol, tf, int(w), 0, motif_idx)
+                )
+            continue
         # filter clusters by silhouette
         # compute silhouette score if possible
         try:
@@ -126,7 +173,7 @@ def cluster(tf: str = typer.Option(..., help="Timeframe, e.g. '1h'"),
             for motif_idx in group[labels == cid]["idx"]:
                 try:
                     insert_sql = ('INSERT INTO clusters (symbol, tf, "window", cluster_id, motif_idx) VALUES(?,?,?,?,?)')
-                    db.execute(insert_sql, (symbol, tf, w, int(cid), int(motif_idx)))
+                    db.execute(insert_sql, (symbol, tf, int(w), int(cid), int(motif_idx)))
                 except BaseException as e:
                     typer.echo(f"DEBUG CLUSTER INSERT failed: {e}")
                     typer.echo(f"DEBUG SQL: {insert_sql}")

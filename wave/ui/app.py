@@ -2,13 +2,41 @@ import dash
 from dash import html, dcc, dash_table
 import requests
 import yaml
+import os
 from pathlib import Path
 from dash.dependencies import Input, Output, State
 
 app = dash.Dash(__name__)
 
+# Default mock configuration for testing
+DEFAULT_TEST_CONFIG = {
+    "symbols": ["BTC-USD", "ETH-USD"],
+    "timeframes": [{"tf": "1h"}, {"tf": "4h"}, {"tf": "1d"}],
+    "cache_dir": "/tmp/waveseer_test_cache",
+    "server": {
+        "host": "localhost",
+        "port": 8000
+    }
+}
+
+
+def get_config():
+    """Get configuration from file or use testing defaults."""
+    # Check if we're in a testing environment
+    if os.getenv("TESTING") == "true":
+        return DEFAULT_TEST_CONFIG
+
+    # Try to load from the config file
+    try:
+        return yaml.safe_load(Path("config.yml").read_text())
+    except (FileNotFoundError, yaml.YAMLError) as e:
+        # Fall back to defaults if file doesn't exist or has errors
+        print(f"Warning: Failed to load config.yml: {e}. Using default configuration.")
+        return DEFAULT_TEST_CONFIG
+
+
 def serve_layout():
-    cfg = yaml.safe_load(Path("config.yml").read_text())
+    cfg = get_config()
     symbols = cfg["symbols"]
     tfs = [tf["tf"] for tf in cfg["timeframes"]]
     return html.Div([
@@ -60,7 +88,7 @@ def load_patterns(symbol, tf):
     # fetch patterns from API
     cfg = yaml.safe_load(Path("config.yml").read_text())
     api = cfg.get("pattern_api", {})
-    url = f"http://{api.get('host','0.0.0.0')}:{api.get('port',9000)}"
+    url = f"http://{api.get('host', '0.0.0.0')}:{api.get('port', 9000)}"
     try:
         res = requests.get(f"{url}/catalog")
         return res.json().get("patterns", []) if res.status_code == 200 else []
@@ -77,15 +105,16 @@ def save_labels(n_clicks, rows):
         return ""
     cfg = yaml.safe_load(Path("config.yml").read_text())
     api = cfg.get("pattern_api", {})
-    url = f"http://{api.get('host','0.0.0.0')}:{api.get('port',9000)}"
+    url = f"http://{api.get('host', '0.0.0.0')}:{api.get('port', 9000)}"
     for r in rows:
         pid = r.get("pattern_id")
-        payload = {"label": r.get("label",""), "color": r.get("color","")}
+        payload = {"label": r.get("label", ""), "color": r.get("color", "")}
         try:
             requests.put(f"{url}/patterns/{pid}", json=payload)
         except Exception:
             continue
     return f"Saved {len(rows)} patterns."
+
 
 def run():
     app.run(host="0.0.0.0", port=8050, debug=True)

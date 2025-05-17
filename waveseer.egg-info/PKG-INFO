@@ -1,0 +1,177 @@
+Metadata-Version: 2.4
+Name: waveseer
+Version: 1.0.0
+Summary: Pattern detection in financial time series data using machine learning
+Author: Waveseer Team
+License: MIT
+Keywords: pattern-detection,machine-learning,financial,time-series
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Financial and Insurance Industry
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: torch>=1.9.0
+Requires-Dist: numpy>=1.20.0
+Requires-Dist: pandas>=1.3.0
+Requires-Dist: scikit-learn>=1.0.0
+Requires-Dist: matplotlib>=3.4.0
+Requires-Dist: fastapi>=0.75.0
+Requires-Dist: uvicorn>=0.17.0
+Requires-Dist: typer>=0.4.0
+Requires-Dist: pydantic>=1.9.0
+Requires-Dist: duckdb>=0.3.0
+Requires-Dist: prometheus-client>=0.13.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=3.0.0; extra == "dev"
+Requires-Dist: black>=22.1.0; extra == "dev"
+Requires-Dist: isort>=5.10.0; extra == "dev"
+Requires-Dist: mypy>=0.931; extra == "dev"
+Requires-Dist: ruff>=0.0.50; extra == "dev"
+Provides-Extra: vis
+Requires-Dist: plotly>=5.6.0; extra == "vis"
+Requires-Dist: dash>=2.3.0; extra == "vis"
+Provides-Extra: notebook
+Requires-Dist: jupyter>=1.0.0; extra == "notebook"
+Requires-Dist: ipywidgets>=7.7.0; extra == "notebook"
+
+# Waveseer
+
+Real-time pattern detection in cryptocurrency time series data.
+
+## Components
+
+- **API**: REST & WebSocket endpoints for pattern detection
+- **Ingest**: Processes incoming pattern events
+- **UI**: Dash app displaying real-time events
+
+## Prerequisites
+
+- Docker
+- kind (Kubernetes-in-Docker)
+- Helm (>= 3.0)
+- kubectl
+- Python 3.12
+
+## Setup
+
+```bash
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Install Playwright browser binaries
+python -m playwright install chromium
+```
+
+## Local Development
+
+```bash
+# Start ingest server (serves events UI on port 8000)
+uvicorn wave.ingest:ws_app --reload --host 127.0.0.1 --port 8000
+
+# Access Pattern Events UI at http://localhost:8000/
+
+# Start Dash management UI
+python3 - <<'EOF'
+from wave.ui.app import run
+run()
+EOF
+
+# Access Dash UI at http://localhost:8050/
+```
+
+## Local Kubernetes Deployment
+
+```bash
+# Create kind cluster
+kind create cluster
+
+# Build Docker image
+docker build -t waveseer:local .
+
+# Load image into kind
+kind load docker-image waveseer:local
+
+# Deploy with Helm
+helm upgrade --install waveseer charts/waveseer \
+  --namespace waveseer --create-namespace \
+  --set image.tag=local
+```
+
+## Port-Forwarding
+
+```bash
+kubectl port-forward svc/waveseer-waveseer-api 9000:9000 -n waveseer
+kubectl port-forward svc/waveseer-waveseer-ingest 8000:8000 -n waveseer
+kubectl port-forward svc/waveseer-waveseer-ui 8050:8050 -n waveseer
+```
+
+Access the UI at [http://localhost:8050](http://localhost:8050)
+
+## Tests
+
+### Unit & Metrics
+
+```bash
+pytest wave/test_metrics.py -q
+```
+
+### Helm Chart Validation
+
+```bash
+bash scripts/test-helm.sh
+```
+
+### UI End-to-End
+
+```bash
+pytest wave/test_ui_e2e.py -q
+pytest wave/test_ui_reconnect_e2e.py -q
+```
+
+## Continuous Integration
+
+The CI workflow is defined in `.github/workflows/ci.yml` and covers:
+
+- Python unit & integration tests
+- Helm lint & template tests
+- UI end-to-end tests
+
+## Branch Strategy
+
+This project follows a structured branch strategy:
+
+- `main` - Stable production-ready code. Protected branch requiring PR approvals.
+- `feature/<name>` - Feature development branches for new functionality.
+- `riff/<name>` - Experimental branches for spikes and explorations (≤ 1 week lifetime).
+
+### Git Workflow
+
+```bash
+# Start a new feature
+git checkout -b feature/new-pattern-detection main
+
+# Commit changes with descriptive messages
+git commit -m "Task-ID: #42 – Add head and shoulders pattern detection"
+
+# Start an experimental spike
+git checkout -b riff/ml-detection main
+```
+
+### Pull Request Process
+
+1. Create PR from feature branch to main
+2. Ensure CI passes (tests, linting, type checking)
+3. Address review comments
+4. Squash and merge to main
+
+## License
+
+MIT

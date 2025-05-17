@@ -1,0 +1,42 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: trailing-whitespace
+        exclude: ^(data/|models/|cache/)
+    -   id: end-of-file-fixer
+        exclude: ^(data/|models/|cache/)
+    -   id: check-yaml
+    -   id: check-json
+    -   id: check-added-large-files
+        args: ['--maxkb=500']
+
+-   repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+    -   id: flake8
+        additional_dependencies: [flake8-docstrings]
+        exclude: ^(data/|models/|cache/)
+        args:
+        - "--max-line-length=100"
+        - "--ignore=E203,W503,D100,D101,D102,D103,D104,D105,D107"
+        # E203: whitespace before ':' (conflicts with black)
+        # W503: line break before binary operator (conflicts with black)
+        # D100-D107: Missing docstrings (too strict for early development)
+
+-   repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+    -   id: isort
+        args: ["--profile", "black", "--filter-files"]
+        exclude: ^(data/|models/|cache/)
+
+-   repo: local
+    hooks:
+    -   id: wave-lint-fixer
+        name: WaveSeer Lint Fixer
+        entry: python -m wave.utils.lint_runner --auto-fix
+        language: system
+        types: [python]
+        exclude: ^(data/|models/|cache/)
+        pass_filenames: true

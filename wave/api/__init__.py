@@ -5,6 +5,21 @@ from pathlib import Path
 
 app = typer.Typer()
 
+
+def create_app():
+    """
+    Factory function that returns the FastAPI application instance.
+    This function exists for testing purposes to allow test code to create
+    app instances with specific configurations.
+    
+    Returns:
+        FastAPI: The configured FastAPI application
+    """
+    # Import here to avoid circular imports
+    from wave.api.app import app as fastapi_app
+    return fastapi_app
+
+
 @app.command("api")
 def api_cmd(
     reload: bool = typer.Option(False, "--reload", help="Enable hot reload")

@@ -1,0 +1,3 @@
+[console_scripts]
+waveseer = wave.cli:app
+waveseer-api = wave.api:api_cmd

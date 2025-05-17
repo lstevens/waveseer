@@ -34,6 +34,7 @@ async def test_ws_match(monkeypatch):
             msg = ws.receive_text()
             assert msg == '"ok"'
 
+@pytest.mark.integration
 def test_stream_broadcast(monkeypatch):
     # Connect two clients and send a stream event
     client = TestClient(ws_app)

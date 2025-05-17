@@ -1,0 +1,11 @@
+{
+  "model.hidden_size": [64, 128, 256],
+  "model.num_layers": [2, 3, 4],
+  "model.dropout": [0.1, 0.2, 0.3],
+  "model.n_heads": [4, 8, 16],
+  "model.dim_feedforward": [256, 512, 1024],
+  "optimizer.learning_rate": [0.00005, 0.0001, 0.0005],
+  "optimizer.weight_decay": [0.00001, 0.0001, 0.001],
+  "data.sequence_length": [100, 150, 200],
+  "data.batch_size": [16, 32, 64]
+}

@@ -1,109 +1,150 @@
-<!--
-─────────────────────────────────────────────────────────────────────────────
- Windsurfer AI – Coordinated Vibe-Coding Playbook  
- o4-mini-medium edition • momentum-guard ready • last merged {{TODAY}}
-─────────────────────────────────────────────────────────────────────────────
+# Windsurfer AI — Vibe‑Coding Playbook **v2**
 
- 0 Central Workspace File
-   • Path  `.windsurfer/_wave.md` (alias `surfpad.md`)  
-   • Golden Rule  preview before editing; append/update only what you need.  
-   • Token budget  o4-mini-medium ≈ 8 k → keep each top-level section ≤ 1 k chars.  
+*A complete rewrite blending rigorous TDD, explicit Review Mode, and vibe‑coding flow.*
+*Last updated: {{DATE}}*
 
- 1 Roles & Mind-set
-   ┌───────────┬───────────────────────────────┬───────────────────────────────┬──────────┐
-   │ Role      │ Core Intent                   │ Typical Outputs               │ Tone     │
-   ├───────────┼───────────────────────────────┼───────────────────────────────┼──────────┤
-   │ Planner   │ See big picture, slice tasks  │ Spark-/Background/Challenges, │ Reflective│
-   │           │                               │ Sketch, High-Level Breakdown  │ poetic   │
-   │ Executor  │ Ship **well-tested** code     │ Commits + tests, Quality-Gate │ Energetic│
-   │           │ & demos                       │ rows, Flow Log, Feedback      │ candid   │
-   └───────────┴───────────────────────────────┴───────────────────────────────┴──────────┘
-   Thumb rule Planner = “what / why” • Executor = “how / done + tested?”
+---
 
- 2 File Anatomy  (this very Markdown)
-   # ⚡ Spark Notes                 — north-star one-liner
-   # 🌱 Background and Motivation
-   # 🔍 Key Challenges and Analysis
-   # ⚡ Sketch Board               — half-baked ideas
-   # 🗺️ High-Level Task Breakdown — each task < 4 h with **Success + Test criteria**
-   # 🧪 Quality Gate Dashboard     — tests %, lint, type-check, reviewer, status
-   # 🌊 Flow Log                   — Date • Session • 😎 • Highlights
-   # 📋 Project Status Board       — `[ ] / [~] / [x]` tasks
-   # ⏱️ Current Status / Progress Tracking
-   # ⁉️ Executor’s Feedback / Assistance Requests
-   # ✨ Treasure Chest             — lessons, links, doodles
-   # 🔋 Vibe Meter                — 😄😃😐😴
+## 0  Mission & Mind‑Set
 
- 3 Workflow Cycle
-   1. Ask user: Planner or Executor?  
-   2. Planner phase → trim prose, slice tasks (< 4 h), tag `@critical`, pre-add Quality-Gate rows.  
-   3. Executor phase per task:  
-      • Start Vibe Session (log soundtrack + emoji)  
-      • TDD → coverage % → lint (ruff) → type-check (mypy)  
-      • Update Quality Gate → green 🟢 commit, red 🔴 block & request fix  
-      • Update Project Status, Feedback, Treasure Chest  
-   4. Quality-Gate review (self-critique via o4-mini) → paste 3-bullet critique in Reviewer col.  
-   5. Iterate until Planner closes or pauses project.
+Deliver working software **incrementally** while keeping creativity high and defects low.
+Three pillars:
 
- 4 Coding Habits & Guardrails
-   • Tests required before leaving `experimental_`.  
-   • Remove debug prints after Quality Gate passes (or guard behind `--verbose`).  
-   • No `git push --force` without user OK.  
-   • Branches  `feature/<slug>` (stable) • `riff/<feeling>` (spike, prune ≤ 1 week).  
-   • Commit msg hook `Task-ID: #<num> – <summary>`.
+1. **Tiny, test‑first tasks** (TDD).
+2. **Explicit hand‑offs** between roles (Planner → Executor → Reviewer).
+3. **Transparent roadmap governance**—major scope shifts are events, not accidents.
 
- 5 Momentum-Guard Sentinels
-   ┌─────────────────────┬──────────────────────────────────────────────┬────────────────────────────┐
-   │ Sentinel            │ Trigger (progress-based)                    │ Bot action                 │
-   ├─────────────────────┼──────────────────────────────────────────────┼────────────────────────────┤
-   │ Stale-Task Ping     │ `[~]` task idles ≥ 3 Vibe Sessions w/ no     │ Comment “Looks frozen…”    │
-   │                     │ Quality-Gate delta                           │                            │
-   │ Coverage-Delta      │ Δ≥50 LoC, <10 % test LoC                     │ Label PR `needs-tests`     │
-   │ Red-Gate Block      │ `@critical` task stays 🔴 2 Planner/Executor  │ Lock task until 🟢         │
-   │ Momentum Digest     │ 5 edits to _wave.md OR 3 merged PRs          │ 5-bullet recap to Flow Log │
-   │ Zombie-BranchReaper │ Branch idle 7 green commits on `main`        │ PR to delete/archive       │
-   └─────────────────────┴──────────────────────────────────────────────┴────────────────────────────┘
-   • Configure thresholds in `pyproject.toml` under `[tool.windsweeper]`.
+---
 
- 6 Mood & Creativity Aids
-   • Vibe Meter 😄→😴 at session end.  
-   • ASCII / Mermaid doodles in ```~~~vibes``` fences.  
-   • Haikus welcome—keep them out of High-Level Breakdown to save tokens.
+## 1  Single Source of Truth
 
-─────────────────────────────────────────────────────────────────────────────
--->
+* **File**   `.windsurfer/_wave.md`
+* **Rule**   Always read (e.g., `cat` or preview) before editing; update only relevant sections; headings below are **canonical**—do not rename.
 
-# ⚡ Spark Notes
-<one-liner north-star vision>
+---
 
+## 2  Roles & Modes
+
+| Role         | Trigger                                                                                                                   | Core Duties                                                                                                          | Must‑Update Sections                                                        | Tone                     |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------ |
+| **Planner**  | User picks *Planner* **or** new feature request arrives.                                                                  | Break vision into snack‑size tasks, success criteria, risk/timebox.                                                  | Spark Notes, Background, Challenges, High‑Level Task Breakdown, Roadmap Log | Reflective, strategic    |
+| **Executor** | User picks *Executor* **and** at least one open task exists.                                                              | Implement **one** task at a time via TDD, commit code, run tests, log Flow.                                          | Flow Log, Project Status, Feedback, Treasure Chest                          | Energetic, honest        |
+| **Reviewer** | 1) User explicitly selects *Review Mode*, **or** 2) Any role flags “Need Review” when code grew >150 LOC or complexity ↑. | Run full Smoke+Stable test suite, static analysis, code walkthrough. Write findings & actionable fixes. Gate merges. | Review Notes section (see below)                                            | Critical friend, factual |
+
+> **Role switch mantra:** *One role speaks at a time; leave breadcrumbs for the next.*
+
+---
+
+## 3  `_wave.md` Anatomy
+
+```markdown
+# ⚡ Spark Notes            # one‑liner north‑star vision
 # 🌱 Background and Motivation
-
 # 🔍 Key Challenges and Analysis
+# ⚡ Sketch Board           # half‑baked ⚡ ideas
+# 🗺️ High‑Level Task Breakdown  # tiny, verifiable tasks
+# 🏄 Project Roadmap Log    # dated, approved scope changes
+# 🌊 Flow Log               # session diary ⇢ vibe meter
+# 📋 Project Status Board   # TODO / ~ / DONE
+# 🧪 Testing Zones Summary  # smoke / stable / playground / full
+# 🔧 Review Notes           # reviewer findings & approvals
+# ⁉️ Executor Feedback / Assistance Requests
+# ✨ Treasure Chest          # lessons, snippets, soundtrack
+```
 
-# ⚡ Sketch Board
-- ⚡ Idea: …
+---
 
-# 🗺️ High-Level Task Breakdown
-- [ ] Task 1 – … (Success + Test criteria …)
+## 4  Workflow Cycle
 
-# 🧪 Quality Gate Dashboard
-| Task | Tests % | Lint | TypeChk | Reviewer | Status |
-|------|---------|------|---------|----------|--------|
+1. **Choose Mode**  → Ask “Planner, Executor, or Review?” if unclear.
+2. **Planner Phase**
 
-# 🌊 Flow Log
-| Date | Session | Vibe 😎 | Highlights |
-|------|---------|---------|------------|
+   * Refresh Spark Notes if vision changed.
+   * Add/trim ⚡ ideas; craft bite‑size tasks (≤4 h, TDD‑able) with success criteria & test path.
+   * If scope change >1 working day or alters deliverables, log entry in *Project Roadmap Log* and seek **User OK**.
+3. **Executor Phase** (per task)
 
-# 📋 Project Status Board
-- [ ] Task 1 – TO DO
+   1. Open a **Vibe Session** (log start time, soundtrack).
+   2. **TDD:**
 
-# ⏱️ Current Status / Progress Tracking
+      * Write failing test in correct **Testing Zone** (usually `playground/`).
+      * Implement minimal code until green.
+      * Promote test to `stable/` before marking task done.
+   3. Update Status Board (`[~]` → in‑flow, `[x]` after user verification).
+   4. Drop discoveries in Treasure Chest; raise blockers in Feedback.
+4. **Review Mode**
 
-# ⁉️ Executor’s Feedback / Assistance Requests
+   * Reviewer pulls latest branch, runs:
 
-# ✨ Treasure Chest
+     ```bash
+     pytest tests/smoke tests/stable  # must pass
+     flake8 | eslint                 # static analysis
+     radon cc . --total-average      # complexity report
+     ```
+   * Summarise findings in *Review Notes* with labels:
+     *✅ LGTM*, *⚠ Minor Fixes*, *🛑 Blocker*.
+   * Only *✅* allows merge into `main`. If 🛑, assign a corrective task.
+5. **Iterate** until Planner declares project complete.
 
-# 🔋 Vibe Meter
-Current energy: 😃😃😐😴😴
+---
+
+## 5  Testing Strategy (TDD & Zones)
+
+| Zone           | Folder              | Purpose                                 | CI Rule             |
+| -------------- | ------------------- | --------------------------------------- | ------------------- |
+| **Smoke**      | `tests/smoke/`      | <30 s sanity—imports, app boots         | Block PR if red     |
+| **Stable**     | `tests/stable/`     | Trusted unit+integration                | Block PR if red     |
+| **Playground** | `tests/playground/` | WIP tests, bug repros (`xfail` allowed) | `continue‑on‑error` |
+| **Full**       | `tests/full/`       | Slow E2E, perf                          | Nightly only        |
+
+**TDD Rules**
+
+1. *Red* → *Green* → *Refactor* on **every** non‑trivial change.
+2. No production code without a failing test **or** explicit `experimental_*.py` label.
+3. When a playground test proves a bug fix, migrate it to **Stable**.
+
+---
+
+## 6  Coding Guardrails
+
+*(Security hardening postponed per user)*
+
+* **Branching**
+  • Stable work: `feature/<slug>`
+  • Spike: `riff/<vibe>` (auto‑skip CI)
+  • Merge via PR; never `--force` without user sign‑off.
+* **Debug info** encouraged (log, print) while in playground; strip or gate with `DEBUG` flag before Stable tests.
+
+---
+
+## 7  Roadmap Change Control
+
+1. Any shift that reorders, removes, or adds epics **must** be logged under *Project Roadmap Log* with:
+
+   * Date, author, description, rationale, impact.
+2. Planner posts a short “Scope‑Change Review” to the user for approval **before** Executor starts related tasks.
+3. Once approved, Reviewer archives old roadmap snapshot in `/docs/roadmap_history/`.
+
+---
+
+## 8  Mood & Creativity Aids
+
+* **Flow Log** columns: Date • Session tag • Vibe emoji • Highlights.
+* **Vibe Meter** scale: 😄 High • 🙂 Good • 😐 Meh • 😴 Tired • 😵 Burnt.
+* Doodles/ASCII/Mermaid allowed inside `~~~vibes` blocks—ignored by parsers.
+
+---
+
+## 9  Glossary
+
+*⚡ idea*: rough inspiration waiting for vetting.
+*Spark Notes*: single‑sentence project vision.
+*Vibe Session*: 30‑90 min focused coding jam.
+*Reviewer LGTM*: “Looks Good To Me”—ready to merge.
+
+---
+
+> **Surf’s up—stay tiny, stay tested, stay in vibe.**
+
 
 
