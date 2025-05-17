@@ -39,7 +39,8 @@ def test_connection_manager_add_remove():
     assert ws2 in manager.active_connections
 
 
-def test_connection_manager_broadcast():
+@pytest.mark.asyncio
+async def test_connection_manager_broadcast():
     """Test broadcasting messages to all connections."""
     manager = ConnectionManager()
 
@@ -55,14 +56,15 @@ def test_connection_manager_broadcast():
 
     # Broadcast message
     message = {"test": "message"}
-    manager.broadcast(message)
+    await manager.broadcast(message)
 
     # Verify both websockets received the message
     ws1.send_json.assert_called_once_with(message)
     ws2.send_json.assert_called_once_with(message)
 
 
-def test_connection_manager_broadcast_with_exception():
+@pytest.mark.asyncio
+async def test_connection_manager_broadcast_with_exception():
     """Test broadcasting with client exception handling."""
     manager = ConnectionManager()
 
@@ -80,7 +82,7 @@ def test_connection_manager_broadcast_with_exception():
 
     # Broadcast message
     message = {"test": "message"}
-    manager.broadcast(message)
+    await manager.broadcast(message)
 
     # Verify ws1 was removed due to exception
     assert ws1 not in manager.active_connections

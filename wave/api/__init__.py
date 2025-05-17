@@ -11,7 +11,7 @@ def create_app():
     Factory function that returns the FastAPI application instance.
     This function exists for testing purposes to allow test code to create
     app instances with specific configurations.
-    
+
     Returns:
         FastAPI: The configured FastAPI application
     """
