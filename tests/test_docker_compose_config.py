@@ -1,5 +1,6 @@
 import yaml
 
+
 def test_docker_compose_services():
     """
     Ensure docker-compose.yml defines required services for local deployment.

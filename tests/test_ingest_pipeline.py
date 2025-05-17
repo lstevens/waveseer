@@ -31,7 +31,7 @@ def test_pipeline_invocation_and_broadcast(isolate_pipeline_fixture):
     payload = {
         "ts_start": "2025-05-04T11:00:00Z",
         "tf": "1h",
-        "pattern_id": "BTCUSDT_pipeline_test", 
+        "pattern_id": "BTCUSDT_pipeline_test",
         "score": 0.9
     }
     response = client.post("/stream", json=payload)
@@ -40,7 +40,7 @@ def test_pipeline_invocation_and_broadcast(isolate_pipeline_fixture):
     # Pipeline.run called once with parsed datetimes derived from PatternHit
     assert len(pipeline_args) == 1
     sym, tf_arg, st_arg, en_arg = pipeline_args[0]
-    
+
     # Assertions based on derivation logic in stream_event
     expected_symbol = payload["pattern_id"].split('_')[0]
     expected_tf = payload["tf"]
@@ -48,7 +48,7 @@ def test_pipeline_invocation_and_broadcast(isolate_pipeline_fixture):
     # Current end_time derivation in stream_event for '1h' would be start_time + 1 minute
     # This highlights a potential issue in stream_event's end_time logic for non-minute timeframes
     # but the test should reflect current behavior.
-    expected_end_time_derived = expected_start_time + timedelta(minutes=int(expected_tf[:-1])) 
+    expected_end_time_derived = expected_start_time + timedelta(minutes=int(expected_tf[:-1]))
 
     assert sym == expected_symbol
     assert tf_arg == expected_tf

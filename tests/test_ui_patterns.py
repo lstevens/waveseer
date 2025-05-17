@@ -4,9 +4,8 @@ pytest.importorskip("dash.testing.application_runners")
 pytest.importorskip("multiprocess")
 pytest.importorskip("uvicorn")
 pytestmark = pytest.mark.integration
-import requests
 from dash.testing.application_runners import import_app
-from pathlib import Path
+
 
 def test_ui_load_and_save(tmp_path, dash_duo, monkeypatch):
     # setup config and dummy API

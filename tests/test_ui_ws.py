@@ -1,9 +1,9 @@
-import json
 import pytest
 from fastapi.testclient import TestClient
 from wave.ingest import ws_app
 
 pytestmark = pytest.mark.integration
+
 
 def test_ui_ws_ingest_echo():
     client = TestClient(ws_app)

@@ -1,5 +1,4 @@
 import json
-import pytest
 from wave.ingest import ws_app
 from fastapi.testclient import TestClient
 

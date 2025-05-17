@@ -53,7 +53,7 @@ def test_stream_valid_payload(isolate_broadcast):
     assert response.json() == {"status": "ok"}
     # broadcast called once with the enriched event
     assert len(isolate_broadcast) == 1
-    
+
     broadcast_event = isolate_broadcast[0]
     # Check that original payload fields are in the broadcast_event
     assert broadcast_event["ts_start"] == payload["ts_start"]

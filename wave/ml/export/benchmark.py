@@ -20,8 +20,8 @@ import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, TensorDataset
 
 from wave.ml.export.model_export import (
-    load_exported_model,
-    measure_inference_speed,
+    load_exported_model,, 
+    measure_inference_speed,, 
     get_model_size
 )
 

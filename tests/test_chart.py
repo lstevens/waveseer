@@ -6,7 +6,6 @@ import pandas as pd
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')  # Use non-interactive backend for testing
-from datetime import datetime, timedelta
 
 from wave.chart import draw_candlestick_chart
 
@@ -29,7 +28,7 @@ def sample_data():
 def test_draw_candlestick_chart_basic(sample_data):
     """Test basic chart generation with sample data."""
     img_str = draw_candlestick_chart(sample_data, title="Test Chart")
-    
+
     # Verify we get a non-empty base64 string
     assert isinstance(img_str, str)
     assert len(img_str) > 1000
@@ -40,7 +39,7 @@ def test_draw_candlestick_chart_basic(sample_data):
 def test_draw_candlestick_chart_empty():
     """Test chart generation with empty dataframe."""
     df = pd.DataFrame(columns=['open', 'high', 'low', 'close', 'volume'])
-    
+
     # Should handle empty dataframe gracefully
     with pytest.raises(ValueError):
         draw_candlestick_chart(df)
@@ -55,7 +54,7 @@ def test_draw_candlestick_chart_single_row():
         'close': [102.0],
         'volume': [1000.0]
     })
-    
+
     img_str = draw_candlestick_chart(df)
     assert isinstance(img_str, str)
     assert len(img_str) > 1000
@@ -64,7 +63,7 @@ def test_draw_candlestick_chart_single_row():
 def test_draw_candlestick_chart_custom_size(sample_data):
     """Test chart generation with custom figure size."""
     img_str = draw_candlestick_chart(sample_data, figsize=(15, 8))
-    
+
     # Larger figure should produce longer base64 string
     assert isinstance(img_str, str)
     assert len(img_str) > 1000
@@ -73,7 +72,7 @@ def test_draw_candlestick_chart_custom_size(sample_data):
 def test_draw_candlestick_chart_datetime_index(sample_data):
     """Test chart with datetime index."""
     df_indexed = sample_data.set_index('datetime')
-    
+
     img_str = draw_candlestick_chart(df_indexed)
     assert isinstance(img_str, str)
     assert len(img_str) > 1000
@@ -83,7 +82,7 @@ def test_draw_candlestick_chart_no_volume(sample_data):
     """Test chart generation with missing volume data."""
     df_no_volume = sample_data.copy()
     df_no_volume['volume'] = 0  # Replace volume with zeros
-    
+
     img_str = draw_candlestick_chart(df_no_volume)
     assert isinstance(img_str, str)
     assert len(img_str) > 1000

@@ -4,6 +4,7 @@ from wave.ingest import ws_app
 
 pytestmark = pytest.mark.integration
 
+
 def test_ui_page_loads():
     client = TestClient(ws_app)
     response = client.get("/")

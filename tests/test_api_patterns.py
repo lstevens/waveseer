@@ -1,7 +1,6 @@
 import pytest
 # Skip if duckdb missing
 duckdb = pytest.importorskip("duckdb")
-import yaml
 from fastapi.testclient import TestClient
 import duckdb
 from wave.api.app import app
@@ -21,12 +20,14 @@ def setup_db(tmp_path):
 
 client = TestClient(app)
 
+
 def test_catalog_returns_color(tmp_path, setup_db):
     res = client.get("/catalog")
     assert res.status_code == 200
     patterns = res.json().get("patterns")
     assert isinstance(patterns, list)
     assert patterns == [{'pattern_id': 'p1', 'label': 'old', 'color': '#fff'}]
+
 
 def test_update_pattern(tmp_path, setup_db):
     payload = {'label': 'new', 'color': '#000'}

@@ -14,7 +14,7 @@ import json
 from pathlib import Path
 
 from wave.ml.feature_engineering import (
-    extract_features,, 
+    extract_features,,
     create_sliding_windows,
 )
 from wave.patterns import PatternMatch, PatternType

@@ -2,10 +2,10 @@ import os
 import pytest
 duckdb = pytest.importorskip("duckdb")
 pl = pytest.importorskip("polars")
-import polars as pl
 import yaml
 from typer.testing import CliRunner
 from wave import app
+
 
 def make_config(path, symbols, timeframes, api):
     cfg = {"symbols": symbols, "timeframes": [{"tf": tf, "windows": [1]} for tf in timeframes]}

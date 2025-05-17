@@ -2,8 +2,6 @@ import pytest
 from fastapi.testclient import TestClient
 from datetime import datetime, timedelta
 import os
-import sys
-from unittest.mock import MagicMock
 
 # Set testing mode env variable before importing modules
 os.environ["TESTING"] = "true"
@@ -19,23 +17,23 @@ client = TestClient(ws_app)
 def mock_pipeline(monkeypatch):
     # Track calls to the run method
     calls = []
-    
+
     # Create a mock class and instance
     class MockPatternPipeline:
         def __init__(self):
             pass  # Skip actual initialization
-            
+
         def run(self, symbol, timeframe, start, end):
             calls.append((symbol, timeframe, start, end))
             return [
                 {"pattern": "alpha", "score": 0.9},
                 {"pattern": "beta", "score": 0.8},
             ]
-    
+
     # Direct replacement in wave.ingest module
     import wave.ingest
     monkeypatch.setattr(wave.ingest, "PatternPipeline", MockPatternPipeline)
-    
+
     return calls
 
 
@@ -44,8 +42,8 @@ def test_ws_integration_enriched_events(mock_pipeline, monkeypatch):
     # Ensure pipeline is not bypassed and events are properly processed
     monkeypatch.setenv("PIPELINE_BYPASS_ENABLED", "false")
     monkeypatch.setenv("PIPELINE_ECHO_RAW_EVENTS", "false")
-    
-    # Connect WebSocket 
+
+    # Connect WebSocket
     with client.websocket_connect("/ws/ingest") as websocket:
         msg = websocket.receive_json()  # Get the connection established message
         assert msg["type"] == "connection_established"
@@ -55,7 +53,7 @@ def test_ws_integration_enriched_events(mock_pipeline, monkeypatch):
         # Send a valid stream event (PatternHit structure)
         start_time = datetime.fromisoformat("2025-05-04T11:00:00+00:00")
         end_time = start_time + timedelta(hours=1)
-        
+
         # Note: Using the actual PatternHit schema fields that match the model
         payload = {
             "symbol": "BTCUSDT",          # Required by PatternHit schema
@@ -70,7 +68,7 @@ def test_ws_integration_enriched_events(mock_pipeline, monkeypatch):
         # Ensure pipeline.run called with correct args derived from PatternHit
         assert len(mock_pipeline) == 1
         sym_arg, tf_arg, st_arg, en_arg = mock_pipeline[0]
-        
+
         expected_symbol = payload["symbol"]
         expected_tf = payload["timeframe"]
         expected_start_time = datetime.fromisoformat(payload["start"])
@@ -91,7 +89,7 @@ def test_ws_integration_enriched_events(mock_pipeline, monkeypatch):
         except Exception as e:
             pytest.fail(f"Test timed out or WebSocket connection failed: {e}")
             return  # Prevent further test execution if we fail
-        
+
         # The messages should contain the pipeline data plus the enriched fields
         # Check for pattern and score (from mock pipeline) within the enriched messages
         assert "pattern" in enriched1
@@ -103,7 +101,7 @@ def test_ws_integration_enriched_events(mock_pipeline, monkeypatch):
         assert "tf" in enriched1
         assert "ts_start" in enriched1
         assert "ts_end" in enriched1
-        
+
         # Check second message similarly
         assert "pattern" in enriched2
         assert "score" in enriched2

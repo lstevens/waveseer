@@ -7,7 +7,6 @@ pytest.importorskip("stumpy")
 import yaml
 from typer.testing import CliRunner
 from wave import app
-from pathlib import Path
 
 @pytest.mark.integration
 def test_scan_parallel(tmp_path, monkeypatch):

@@ -7,6 +7,7 @@ import json
 def client():
     return TestClient(ws_app)
 
+
 def test_root_and_static(client):
     # Root index.html
     r = client.get('/')
@@ -45,12 +46,12 @@ def test_stream_broadcast(monkeypatch):
         conn2 = ws2.receive_json()
         assert conn1['type'] == 'connection_established'
         assert conn2['type'] == 'connection_established'
-        
+
         # Now post the event
         r = client.post('/stream', json=event)
         assert r.status_code == 200
         assert r.json() == {'status': 'ok'}
-        
+
         # Both clients should receive the event
         assert ws1.receive_json() == event
         assert ws2.receive_json() == event

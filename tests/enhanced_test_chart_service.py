@@ -1,19 +1,11 @@
 """
 Enhanced unit tests for the Chart Service component.
 """
-import pytest
-import os
-import tempfile
-import json
-import pandas as pd
-import numpy as np
-from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from fastapi.testclient import TestClient
 
 # Import the chart service FastAPI app
 from wave.chart_service import app
-from tests.fixtures.chart_fixtures import mock_cache_dir, patch_path, sample_ohlcv_df, sample_ohlcv_pl_df
 
 # Create test client
 client = TestClient(app)
@@ -51,7 +43,7 @@ def test_bars_endpoint_with_params(patch_path):
     assert response.status_code == 200
     data = response.json()
     assert len(data["bars"]) <= 5  # Should respect window parameter
-    
+
     # Test with limit parameter
     response = client.get("/bars?symbol=testbtc&tf=1m&limit=3")
     assert response.status_code == 200
@@ -64,12 +56,12 @@ def test_chart_endpoint(mock_draw, patch_path):
     """Test that the chart endpoint returns HTML with embedded chart."""
     # Mock the chart drawing function to return a fixed base64 string
     mock_draw.return_value = "mocked_base64_data"
-    
+
     response = client.get("/chart?symbol=testbtc&tf=1m&window=10")
     assert response.status_code == 200
     assert response.headers["content-type"] == "text/html; charset=utf-8"
     assert "data:image/png;base64,mocked_base64_data" in response.text
-    
+
     # Verify draw_candlestick_chart was called with correct params
     mock_draw.assert_called_once()
     args, kwargs = mock_draw.call_args
@@ -91,7 +83,7 @@ def test_chart_endpoint_error_handling():
     assert response.status_code == 404
     assert "Error Generating Chart" in response.text
     assert "No data available" in response.text
-    
+
 
 def test_chart_endpoint_with_polars_error(patch_path):
     """Test chart endpoint handling polars errors."""

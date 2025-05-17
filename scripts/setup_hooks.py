@@ -16,9 +16,9 @@ def check_prerequisites():
     """Check if pre-commit is installed."""
     try:
         subprocess.run(
-            ["pre-commit", "--version"], 
-            check=True, 
-            stdout=subprocess.PIPE, 
+            ["pre-commit", "--version"],
+            check=True,
+            stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
         return True
@@ -58,29 +58,29 @@ def setup_hooks():
 def main():
     """Main entry point."""
     print("🌊 WaveSeer Pre-commit Hook Setup 🌊")
-    
+
     # Change to project root directory
     root_dir = Path(__file__).parent.parent
     os.chdir(root_dir)
-    
+
     # Check if .pre-commit-config.yaml exists
     if not Path(".pre-commit-config.yaml").exists():
         print("❌ .pre-commit-config.yaml not found in project root!")
         return 1
-    
+
     # Check for pre-commit
     if not check_prerequisites():
         print("➡️ pre-commit not found. Installing...")
         if not install_pre_commit():
             return 1
-    
+
     # Set up hooks
     if not setup_hooks():
         return 1
-    
+
     print("\n🎉 Setup complete! Pre-commit hooks will now run on each commit.")
     print("➡️ To run manually on all files: pre-commit run --all-files")
-    
+
     return 0
 
 

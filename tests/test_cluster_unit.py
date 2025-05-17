@@ -5,7 +5,7 @@ pl = pytest.importorskip("polars")
 from datetime import datetime, timedelta
 from typer.testing import CliRunner
 from wave import app
-from pathlib import Path
+
 
 def make_config(path, symbol, tf, windows):
     cfg = {

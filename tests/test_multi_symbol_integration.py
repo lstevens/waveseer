@@ -1,13 +1,11 @@
 import pytest
 pytest.importorskip("polars")
 pytest.importorskip("duckdb")
-import polars as pl
 import duckdb
 import yaml
 from typer.testing import CliRunner
 from wave import app
-from pathlib import Path
-from datetime import datetime
+
 
 def make_csv(symbol, tf, base_path):
     dir = base_path / symbol / tf

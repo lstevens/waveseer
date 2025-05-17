@@ -1,7 +1,6 @@
 """
 Tests for chart integration module.
 """
-import os
 import pytest
 import numpy as np
 import pandas as pd
@@ -13,8 +12,8 @@ from wave.patterns import PatternType, PatternMatch
 from wave.chart import draw_candlestick_chart
 from wave.ml.viz.pattern_viz import PatternVisualizer
 from wave.ml.viz.chart_integration import (
-    draw_chart_with_patterns,
-    overlay_patterns_on_existing_chart,
+    draw_chart_with_patterns,, 
+    overlay_patterns_on_existing_chart,, 
     augment_chart_with_ml_patterns
 )
 
@@ -24,21 +23,21 @@ def sample_ohlcv_data():
     """Create sample OHLCV data for testing."""
     np.random.seed(42)
     dates = pd.date_range('2023-01-01', periods=100)
-    
+
     # Create some realistic price movements
     base = 100
     moves = np.cumsum(np.random.normal(0, 1, 100))
     close = base + moves
-    
+
     # Create open, high, low based on close
     daily_volatility = 1.0
     high = close + np.random.uniform(0, daily_volatility, 100)
     low = close - np.random.uniform(0, daily_volatility, 100)
     open_prices = close - np.random.uniform(-daily_volatility/2, daily_volatility/2, 100)
-    
+
     # Create volume
     volume = np.random.uniform(1000, 5000, 100)
-    
+
     df = pd.DataFrame({
         'open': open_prices,
         'high': high,
@@ -46,7 +45,7 @@ def sample_ohlcv_data():
         'close': close,
         'volume': volume
     }, index=dates)
-    
+
     return df
 
 
@@ -121,7 +120,7 @@ def is_valid_base64_image(img_str):
         if "base64," in img_str:
             # Handle if the string is in data URL format
             img_str = img_str.split("base64,")[1]
-        
+
         image_data = base64.b64decode(img_str)
         image = Image.open(io.BytesIO(image_data))
         return True
@@ -138,7 +137,7 @@ def test_draw_chart_with_patterns(sample_ohlcv_data, sample_patterns):
         title="Test Chart"
     )
     assert is_valid_base64_image(result)
-    
+
     # Test without patterns (should detect them)
     try:
         result = draw_chart_with_patterns(
@@ -150,7 +149,7 @@ def test_draw_chart_with_patterns(sample_ohlcv_data, sample_patterns):
     except Exception:
         # If pattern detection is not fully implemented, this might fail but shouldn't crash the test
         pass
-    
+
     # Test with custom visualizer
     custom_visualizer = PatternVisualizer(
         pattern_colors={PatternType.HEAD_AND_SHOULDERS: "blue"},
@@ -162,7 +161,7 @@ def test_draw_chart_with_patterns(sample_ohlcv_data, sample_patterns):
         pattern_visualizer=custom_visualizer
     )
     assert is_valid_base64_image(result)
-    
+
     # Test with data URL format
     result = draw_chart_with_patterns(
         df=sample_ohlcv_data,
@@ -177,7 +176,7 @@ def test_overlay_patterns_on_existing_chart(sample_ohlcv_data, sample_patterns):
     """Test overlay_patterns_on_existing_chart function."""
     # First create a chart
     chart_img = draw_candlestick_chart(sample_ohlcv_data)
-    
+
     # Test overlaying patterns
     result = overlay_patterns_on_existing_chart(
         chart_img_data=chart_img,
@@ -185,7 +184,7 @@ def test_overlay_patterns_on_existing_chart(sample_ohlcv_data, sample_patterns):
         patterns=sample_patterns
     )
     assert is_valid_base64_image(result)
-    
+
     # Test with data URL format
     data_url = f"data:image/png;base64,{chart_img}"
     result = overlay_patterns_on_existing_chart(
@@ -205,7 +204,7 @@ def test_augment_chart_with_ml_predictions(sample_ohlcv_data, sample_ml_predicti
         confidence_threshold=0.5
     )
     assert is_valid_base64_image(result)
-    
+
     # Test with higher confidence threshold (should show 1 pattern)
     result = augment_chart_with_ml_patterns(
         df=sample_ohlcv_data,
@@ -213,7 +212,7 @@ def test_augment_chart_with_ml_predictions(sample_ohlcv_data, sample_ml_predicti
         confidence_threshold=0.8
     )
     assert is_valid_base64_image(result)
-    
+
     # Test with no patterns (confidence threshold = 1.0)
     result = augment_chart_with_ml_patterns(
         df=sample_ohlcv_data,

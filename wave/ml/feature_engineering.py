@@ -12,14 +12,14 @@ import pandas as pd
 import polars as pl
 
 from wave.indicators import (
-    calculate_rsi,, 
-    calculate_macd,, 
-    calculate_bollinger_bands,, 
-    calculate_ema,, 
-    calculate_sma,, 
-    calculate_atr,, 
-    calculate_stochastic,, 
-    normalize_indicator,, 
+    calculate_rsi,,
+    calculate_macd,,
+    calculate_bollinger_bands,,
+    calculate_ema,,
+    calculate_sma,,
+    calculate_atr,,
+    calculate_stochastic,,
+    normalize_indicator,,
     to_pandas,
 )
 

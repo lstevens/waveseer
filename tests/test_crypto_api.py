@@ -1,5 +1,4 @@
 import pytest
-import json
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Float, DateTime
 from sqlalchemy.pool import StaticPool
@@ -58,6 +57,7 @@ def sqlite_session(monkeypatch):
     yield
 
 client = TestClient(app)
+
 
 def test_list_empty():
     response = client.get('/crypto/patterns', params={'symbol': 'BTCUSDT', 'timeframe': '1m', 'start': '2025-05-03T00:00:00', 'end': '2025-05-03T01:00:00'})

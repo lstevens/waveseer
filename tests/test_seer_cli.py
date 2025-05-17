@@ -1,13 +1,12 @@
 import yaml
-import typer
 import polars as pl
 import json
-from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 from wave.seer import app
 import yaml
 import shutil
+
 
 class DummyResponse:
     def __init__(self, status_code, data=None):
@@ -30,6 +29,7 @@ def temp_workspace(tmp_path, monkeypatch):
     df.write_parquet(str(out_dir / "1m.parquet"))
     yield
 
+
 def test_seer_cli_without_stream(monkeypatch, capsys):
     calls = []
     def fake_post(url, json=None):
@@ -47,6 +47,7 @@ def test_seer_cli_without_stream(monkeypatch, capsys):
     evt = json.loads(output)
     assert evt["pattern_id"] == "p1"
     assert evt["score"] == 0.5
+
 
 def test_seer_cli_with_stream(monkeypatch):
     calls = []
@@ -72,6 +73,7 @@ def test_seer_cli_with_stream(monkeypatch):
     payload = json.loads(printed)
     assert payload["pattern_id"] == "p2"
     assert payload["score"] == 0.8
+
 
 def test_seer_cli_error_on_missing_cache(tmp_path, monkeypatch):
     # Simulate missing build/cache layout

@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import pandas as pd
 
+
 def main():
     parser = argparse.ArgumentParser(description="Sample CSV data by datetime window")
     parser.add_argument('--index', default='data/index.json', help='Path to full index JSON')

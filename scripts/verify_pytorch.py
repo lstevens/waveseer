@@ -11,6 +11,7 @@ import platform
 import torch
 import numpy as np
 
+
 def verify_pytorch():
     """Verify PyTorch installation and print system info."""
     print("=" * 50)
@@ -26,28 +27,28 @@ def verify_pytorch():
         for i in range(torch.cuda.device_count()):
             print(f"  Device {i}: {torch.cuda.get_device_name(i)}")
     print("=" * 50)
-    
+
     # Basic tensor operations
     print("\nBASIC TENSOR OPERATIONS")
     print("=" * 50)
-    
+
     # Create a tensor
     x = torch.randn(5, 3)
     print(f"Random tensor x:\n{x}")
-    
+
     # Basic operations
     y = torch.ones(5, 3)
     print(f"\nTensor y (ones):\n{y}")
-    
+
     z = x + y
     print(f"\nAddition (x + y):\n{z}")
-    
+
     # Matrix multiplication
     a = torch.randn(3, 4)
     b = torch.randn(4, 2)
     c = torch.matmul(a, b)
     print(f"\nMatrix multiplication (a @ b):\n{c}")
-    
+
     # Test GPU if available
     if torch.cuda.is_available():
         print("\nTesting GPU operations...")
@@ -56,7 +57,7 @@ def verify_pytorch():
         z_cuda = x_cuda + y_cuda
         print(f"GPU addition result shape: {z_cuda.shape}, device: {z_cuda.device}")
         print("GPU operations successful!")
-    
+
     print("\nPyTorch verification complete! All operations successful.")
     return True
 
