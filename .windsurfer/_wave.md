@@ -67,6 +67,8 @@ WaveSeer uncovers recurrent price motifs in crypto time series. We need robust c
 | 2025-04-30 | S3      | 😃😐   | Completed Task 15.1: added architecture sketches      |
 | 2025-04-30 | S4      | 😃😐   | Completed Task 15.4.3: static mount works             |
 | 2025-04-30 | S5      | 😃😐   | Completed Tasks 15.5.1–15.5.4: Docker/Compose, Helm chart, Metrics & Dashboard |
+| 2025-05-17 | S6      | 🧩🧪📊 | Completed TEST.2 & QUALITY.1 - Fix test suite and perform code quality checks |
+| 2025-05-17 | S7      | 🏗️🧪  | Completed DB.1 - Decouple test suite from live database connections |
 
 # 📋 Project Status Board
 - [x] Task 10 – Done
